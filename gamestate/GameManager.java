@@ -73,4 +73,4 @@ public class GameManager extends Application {
     {
     	launch(args); // Allows you to run the JavaFX program. 
     }
-}
+} 
