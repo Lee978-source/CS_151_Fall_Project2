@@ -5,14 +5,20 @@
  */
 package game_state; 
 
+import java.util.ArrayList; // To create ArrayList objects. 
+import java.util.List; // To create List objects. 
+import java.io.IOException;
+import java.nio.file.Files; // To allow file writing. 
+import java.nio.file.Path; // To create an object that locates a file in the system. 
+import java.nio.file.Paths; // To retrieve the path to a file via URI or path string. 
+import java.nio.file.StandardOpenOption; // To allow the creation or overwriting of a file. 
+
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.Scene;
 
@@ -31,6 +37,9 @@ public class GameManager extends Application {
 	private Label createMessageLabel = new Label(""); // Shows success/failure message ("Create Account" screen). 
 	private TextField createUsernameField = new TextField(); // Create a text field to enter username ("Create Account" screen). 
 	private TextField createPasswordField = new TextField(); // Create a text field to enter password ("Create Account" screen).
+	
+	// Global Accounts List to hold all usernames and passwords:
+	private List<String> allUsers = new ArrayList<>(); // Holds ALL players' username and password (in each index). 
 	
     @Override 
     public void start(Stage primaryStage) { 
@@ -106,6 +115,32 @@ public class GameManager extends Application {
 		this.createPasswordField.setPromptText("Enter password"); // Prompt text. 
 		Button createAccButton = new Button("Create User"); // Button to submit account details to create the new account. 
 		Button backButton = new Button("Back"); // Button to go back to "Intro" screen. 
+		
+		createAccButton.setOnAction(e -> {
+			 
+			String username = this.createUsernameField.getText(); // Store the entered username into a String variable. 
+			String password = this.createPasswordField.getText(); // Store the entered password into a String variable. 
+			
+			Path userAccountsPath = Paths.get("game_state/user_accounts.txt"); // Get path to the location of the user_accounts.txt file (does NOT know details of the file yet). 
+			
+			try {
+				this.allUsers = Files.readAllLines(userAccountsPath); // Read and put all existing players' username and password into the Global Accounts List (all of the lines, which are the details of the file). 
+			} catch (IOException e1) {
+				System.out.println("Error reading file: " + e1.getMessage()); // Print message if we get an Input/Output exception with reading the .txt file. 
+			} 
+			
+			this.allUsers.add(username + " " + password); // Store the new username and its corresponding password to the next available index in the allUsers List. 
+			
+			// Try-catch block to handle potential IOException (file read/write failure): 
+			try {
+				Files.write(userAccountsPath, // Get the path to the location of the new/existing file we wish to create/modify. 
+						allUsers, // Retrieve the List containing the different "lines" for each player's username and their respective password. 
+						StandardOpenOption.CREATE, // Create the new user_accounts.txt file if it does not exist already. 
+						StandardOpenOption.TRUNCATE_EXISTING); // Otherwise, overwrite the existing user_accounts.txt file every time a new account is created. 
+			} catch (IOException e1) {
+				System.out.println("Error writing file: " + e1.getMessage()); // Print message if we get an Input/Output exception with writing the .txt file. 
+			} 
+		});
 		
 		backButton.setOnAction(e -> { // If the "Back" button was pressed, 
 			this.primaryStage.setScene(this.introScreen); // then go back to the "Intro" screen. 
