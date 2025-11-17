@@ -38,26 +38,36 @@ public class GameManager extends Application {
 	private TextField createUsernameField = new TextField(); // Create a text field to enter username ("Create Account" screen). 
 	private TextField createPasswordField = new TextField(); // Create a text field to enter password ("Create Account" screen).
 	
-	// Global Accounts List to hold all usernames and passwords:
+	// Global Accounts List and Path (to .txt file) to hold all usernames and passwords:
 	private List<String> allUsers = new ArrayList<>(); // Holds ALL players' username and password (in each index). 
+	private Path userAccountsPath = Paths.get("game_state/user_accounts.txt"); // Get path to the location of the user_accounts.txt file (does NOT know details of the file yet). 
 	
     @Override 
     public void start(Stage primaryStage) { 
     	
-    	// Store the primaryStage variable into the primaryStage Global Instance Variable:
-    	this.primaryStage = primaryStage; 
+    	if (Files.exists(this.userAccountsPath) && Files.isReadable(this.userAccountsPath)) // Make sure the data .txt files exist and are readable. 
+    	{
+    		// Store the primaryStage variable into the primaryStage Global Instance Variable:
+        	this.primaryStage = primaryStage; 
+        	
+        	// Call "getter" methods to retrieve each of the Global Scenes: 
+        	this.introScreen = getIntroScreen(); // Create Scene object for this "Intro" screen to be displayed. 
+        	this.loginScreen = getLoginScreen(); // Create Scene object for this "Login" screen to be displayed. 
+        	this.createAccScreen = getCreateAccScreen(); // Create Scene object for this "Create Account" screen to be displayed. 
+        	
+        	//VBox layout = new VBox(10, loginButton, createButton);  // Format layout for "Intro" screen to choose between login or create account buttons. 
+        	//layout.setAlignment(Pos.CENTER); // Align the UI components of the "Intro" screen to the center. 
+        	//Scene scene = new Scene(this.introScreen); // Create Scene object for this "Intro" screen to be displayed. 
+        	this.primaryStage.setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
+        	this.primaryStage.setScene(this.introScreen); // Set this "Intro" screen as the displayed scene. 
+        	this.primaryStage.show(); // Raise the stage curtains! 
+    	}
     	
-    	// Call "getter" methods to retrieve each of the Global Scenes: 
-    	this.introScreen = getIntroScreen(); // Create Scene object for this "Intro" screen to be displayed. 
-    	this.loginScreen = getLoginScreen(); // Create Scene object for this "Login" screen to be displayed. 
-    	this.createAccScreen = getCreateAccScreen(); // Create Scene object for this "Create Account" screen to be displayed. 
+    	else // Print a message if any of the data .txt files do not exist or cannot be read. 
+    	{
+    		System.out.println("One or more of the data files does not exist or is not readable.");
+    	}
     	
-    	//VBox layout = new VBox(10, loginButton, createButton);  // Format layout for "Intro" screen to choose between login or create account buttons. 
-    	//layout.setAlignment(Pos.CENTER); // Align the UI components of the "Intro" screen to the center. 
-    	//Scene scene = new Scene(this.introScreen); // Create Scene object for this "Intro" screen to be displayed. 
-    	this.primaryStage.setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
-    	this.primaryStage.setScene(this.introScreen); // Set this "Intro" screen as the displayed scene. 
-    	this.primaryStage.show(); // Raise the stage curtains! 
     	
     }
     
@@ -121,24 +131,17 @@ public class GameManager extends Application {
 			String username = this.createUsernameField.getText(); // Store the entered username into a String variable. 
 			String password = this.createPasswordField.getText(); // Store the entered password into a String variable. 
 			
-			Path userAccountsPath = Paths.get("game_state/user_accounts.txt"); // Get path to the location of the user_accounts.txt file (does NOT know details of the file yet). 
-			
-			try {
-				this.allUsers = Files.readAllLines(userAccountsPath); // Read and put all existing players' username and password into the Global Accounts List (all of the lines, which are the details of the file). 
-			} catch (IOException e1) {
-				System.out.println("Error reading file: " + e1.getMessage()); // Print message if we get an Input/Output exception with reading the .txt file. 
-			} 
-			
-			this.allUsers.add(username + " " + password); // Store the new username and its corresponding password to the next available index in the allUsers List. 
-			
 			// Try-catch block to handle potential IOException (file read/write failure): 
 			try {
-				Files.write(userAccountsPath, // Get the path to the location of the new/existing file we wish to create/modify. 
-						allUsers, // Retrieve the List containing the different "lines" for each player's username and their respective password. 
+				this.allUsers = Files.readAllLines(this.userAccountsPath); // Read and put all existing players' username and password into the Global Accounts List (all of the lines, which are the details of the file). 
+				this.allUsers.add(username + " " + password); // Store the new username and its corresponding password to the next available index in the allUsers List. 
+				
+				Files.write(this.userAccountsPath, // Get the path to the location of the new/existing file we wish to create/modify. 
+						this.allUsers, // Retrieve the List containing the different "lines" for each player's username and their respective password. 
 						StandardOpenOption.CREATE, // Create the new user_accounts.txt file if it does not exist already. 
 						StandardOpenOption.TRUNCATE_EXISTING); // Otherwise, overwrite the existing user_accounts.txt file every time a new account is created. 
 			} catch (IOException e1) {
-				System.out.println("Error writing file: " + e1.getMessage()); // Print message if we get an Input/Output exception with writing the .txt file. 
+				System.out.println("Error reading/writing file: " + e1.getMessage()); // Print message if we get an Input/Output exception with reading/writing the .txt file. 
 			} 
 		});
 		
