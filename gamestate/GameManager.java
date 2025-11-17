@@ -104,6 +104,31 @@ public class GameManager extends Application {
 		Button loginButton = new Button("Login"); // Button to submit account details to verify login. 
 		Button backButton = new Button("Back"); // Button to go back to "Intro" screen. 
 		
+		loginButton.setOnAction(e -> {
+			
+			String username = this.loginUsernameField.getText(); // Store the entered username into a String variable. 
+			String password = this.loginPasswordField.getText(); // Store the entered password into a String variable. 
+			
+			// Try-catch block to handle potential IOException (file read/write failure):
+			try {
+				this.allUsers = Files.readAllLines(this.userAccountsPath); // Read and put all existing players' username and password into the Global Accounts List (all of the lines, which are the details of the file). 
+				
+				for (String user : this.allUsers)
+				{
+					if (user.equals(username + "\t" + password))
+					{
+						System.out.println("Welcome, " + username); // Premature test line to ensure login works. 
+					}
+				}
+				
+				System.out.println("Failure!"); // For debugging. 
+			}
+			catch (IOException e1)
+			{
+				System.out.println("Error reading/writing file: " + e1.getMessage()); // Print message if we get an Input/Output exception with reading the .txt file. 
+			}
+		});
+		
 		backButton.setOnAction(e -> { // If the "Back" button was pressed, 
 			this.primaryStage.setScene(this.introScreen); // then go back to the "Intro" screen. 
 			this.primaryStage.setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
@@ -126,7 +151,7 @@ public class GameManager extends Application {
 		Button createAccButton = new Button("Create User"); // Button to submit account details to create the new account. 
 		Button backButton = new Button("Back"); // Button to go back to "Intro" screen. 
 		
-		createAccButton.setOnAction(e -> {
+		createAccButton.setOnAction(e -> { // If the "Create User" button was pressed, 
 			 
 			String username = this.createUsernameField.getText(); // Store the entered username into a String variable. 
 			String password = this.createPasswordField.getText(); // Store the entered password into a String variable. 
@@ -134,7 +159,7 @@ public class GameManager extends Application {
 			// Try-catch block to handle potential IOException (file read/write failure): 
 			try {
 				this.allUsers = Files.readAllLines(this.userAccountsPath); // Read and put all existing players' username and password into the Global Accounts List (all of the lines, which are the details of the file). 
-				this.allUsers.add(username + " " + password); // Store the new username and its corresponding password to the next available index in the allUsers List. 
+				this.allUsers.add(username + "\t" + password); // Store the new username and its corresponding password to the next available index in the allUsers List. 
 				
 				Files.write(this.userAccountsPath, // Get the path to the location of the new/existing file we wish to create/modify. 
 						this.allUsers, // Retrieve the List containing the different "lines" for each player's username and their respective password. 
