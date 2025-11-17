@@ -207,13 +207,21 @@ public class GameManager extends Application {
     	Button launchSnake = new Button("Play Snake Game"); // Button to launch the Snake game. 
     	Button empty1 = new Button("New Game TBA"); // Empty button for future game. 
     	Button empty2 = new Button("New Game TBA"); // Empty button for future game. 
+    	Button logout = new Button("Logout"); // Button to log out and go back to "Intro" screen. 
+    	
+    	logout.setOnAction(e -> { // If the user has selected "Logout" button, 
+    		this.username = null; // Set current username to null. 
+    		this.password = null; // Set current password to null. 
+    		this.primaryStage.setScene(this.introScreen); // Go back to the "Intro" screen where it asked player to login or create an account. 
+    		this.primaryStage.setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
+    	});
     	
     	// Layout for the side providing the top 5 high scores:
     	VBox scoresLayout = new VBox(10, highScoresBJ, highScoresSnake); // Put components into a Vertical Box. 
     	scoresLayout.setAlignment(Pos.CENTER); // Align the UI components to the center. 
     	
     	// Layout for the side providing game options: 
-    	VBox gamesButtonsLayout = new VBox(10, launchBlackJack, launchSnake, empty1, empty2); // Put components into a Vertical Box. 
+    	VBox gamesButtonsLayout = new VBox(10, launchBlackJack, launchSnake, empty1, empty2, logout); // Put components into a Vertical Box. 
     	gamesButtonsLayout.setAlignment(Pos.CENTER); // Align UI components to the center. 
     	
     	// Overall screen layout to hold the scoresLayout VBox and the gamesButtonsLayout VBox: 
