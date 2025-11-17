@@ -33,16 +33,16 @@ public class GameManager extends Application {
 	private Scene mainScreen; 
 	
 	// Global Instance UI components to be used in "Log In" and "Create Account" screens (need separate UI components for each one because a node can have ONLY one parent): 
-	private Label loginMessageLabel = new Label(""); // Shows success/failure message ("Log In" screen). 
+	//private Label loginMessageLabel = new Label(""); // Shows success/failure message ("Log In" screen). 
 	private TextField loginUsernameField = new TextField(); // Create a text field to enter username ("Log In" screen). 
 	private TextField loginPasswordField = new TextField(); // Create a text field to enter password ("Log In" screen).
-	private Label createMessageLabel = new Label(""); // Shows success/failure message ("Create Account" screen). 
+	//private Label createMessageLabel = new Label(""); // Shows success/failure message ("Create Account" screen). 
 	private TextField createUsernameField = new TextField(); // Create a text field to enter username ("Create Account" screen). 
 	private TextField createPasswordField = new TextField(); // Create a text field to enter password ("Create Account" screen).
 	
 	// Global Accounts List and Path (to .txt file) to hold all usernames and passwords:
 	private List<String> allUsers; // Holds ALL players' username and password (in each index). 
-	private Path userAccountsPath = Paths.get("game_state/user_accounts.txt"); // Get path to the location of the user_accounts.txt file (does NOT know details of the file yet). 
+	private final Path userAccountsPath = Paths.get("game_state/user_accounts.txt"); // Get path to the location of the user_accounts.txt file (does NOT know details of the file yet). 
 	
 	// Global Instance Variables to track current player:
 	private String username; 
@@ -51,20 +51,20 @@ public class GameManager extends Application {
     @Override 
     public void start(Stage primaryStage) { 
     	
-    	if (Files.exists(this.userAccountsPath) && Files.isReadable(this.userAccountsPath)) // Make sure the data .txt files exist and are readable. 
+    	if (Files.exists(this.getAccsPath()) && Files.isReadable(this.getAccsPath())) // Make sure the data .txt files exist and are readable. 
     	{
     		// Store the primaryStage variable into the primaryStage Global Instance Variable:
-        	this.primaryStage = primaryStage; 
+    		this.setPrimaryStage(primaryStage); 
         	
-        	// Call "getter" methods to retrieve each of the Global Scenes: 
-        	this.introScreen = getIntroScreen(); // Create Scene object for this "Intro" screen to be displayed. 
-        	this.loginScreen = getLoginScreen(); // Create Scene object for this "Login" screen to be displayed. 
-        	this.createAccScreen = getCreateAccScreen(); // Create Scene object for this "Create Account" screen to be displayed. 
-        	this.mainScreen = getMainScreen(); // Create Scene object for this "Main Menu" screen to be displayed. 
+        	// Call "setter" methods to create each of the Global Scenes: 
+        	this.setIntroScreen(); // Create Scene object for this "Intro" screen to be displayed. 
+        	this.setLoginScreen(); // Create Scene object for this "Login" screen to be displayed. 
+        	this.setCreateAccScreen(); // Create Scene object for this "Create Account" screen to be displayed. 
+        	this.setMainScreen(); // Create Scene object for this "Main Menu" screen to be displayed. 
         	
-        	this.primaryStage.setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
-        	this.primaryStage.setScene(this.introScreen); // Set this "Intro" screen as the displayed scene. 
-        	this.primaryStage.show(); // Raise the stage curtains! 
+        	this.getPrimaryStage().setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
+        	this.getPrimaryStage().setScene(this.getIntroScreen()); // Set this "Intro" screen as the displayed scene. 
+        	this.getPrimaryStage().show(); // Raise the stage curtains! 
     	}
     	
     	else // Print a message if any of the data .txt files do not exist or cannot be read. 
@@ -73,56 +73,146 @@ public class GameManager extends Application {
     	}
     }
     
-    /** Create and get the "Intro" Screen: **/
+    /** Getter methods: **/
+    public String getUsername()
+    {
+    	return this.username; // Return the current username in the program. 
+    }
+    
+    public String getPassword()
+    {
+    	return this.password; // Return the current password in the program. 
+    }
+    
+    public List<String> getUsersList()
+    {
+    	return this.allUsers; // Return the list of all existing users in the program. 
+    }
+    
+    public Path getAccsPath()
+    {
+    	return this.userAccountsPath; // Return the path to the location of the user_accounts.txt file (does NOT know details of the file yet).  
+    }
+    
+    public TextField getLoginUserField()
+    {
+    	return this.loginUsernameField; // Return the global loginUsernameField variable. 
+    }
+    
+    public TextField getLoginPassField()
+    {
+    	return this.loginPasswordField; // Return the global loginPasswordField variable. 
+    }
+    
+    public TextField getCreateUserField()
+    {
+    	return this.createUsernameField; // Return the global createUsernameField variable. 
+    }
+    
+    public TextField getCreatePassField()
+    {
+    	return this.createPasswordField; // Return the global createPasswordField variable. 
+    }
+    
+    public Stage getPrimaryStage()
+    {
+    	return this.primaryStage; // Return the primaryStage. 
+    }
+    
+    /** Get the "Intro" Screen: **/
     public Scene getIntroScreen()
+    {
+    	return this.introScreen; // Return the global introScreen variable. 
+    }
+    
+    /** Get the "Log In" Screen: **/
+    public Scene getLoginScreen()
+    {
+    	return this.loginScreen; // Return the global loginScreen variable. 
+    }
+    
+    /** Get the "Create Account" Screen: **/
+    public Scene getCreateAccScreen()
+    {
+    	return this.createAccScreen; // Return the global createAccScreen variable. 
+    }
+    
+    /** Get the "Main Menu" Screen: **/
+    public Scene getMainScreen()
+    {
+    	return this.mainScreen; // Return the global mainScreen variable. 
+    }
+    
+    /** Setter methods: **/
+    public void setUsername(String username) 
+    {
+    	this.username = username; // Assign the sent username as the global username. 
+    }
+    
+    public void setPassword(String password)
+    {
+    	this.password = password; // Assign the sent password as the global password. 
+    }
+    
+    public void setUsersList(List<String> allUsers)
+    {
+    	this.allUsers = allUsers; // Assign the sent allUsers List as the global allUsers. 
+    }
+    
+    public void setPrimaryStage(Stage primaryStage)
+    {
+    	// Store the primaryStage variable into the primaryStage Global Instance Variable:
+    	this.primaryStage = primaryStage; 
+    }
+    
+    /** Create and Set the "Intro" Screen: **/
+    public void setIntroScreen() // Create Scene object for this "Intro" screen to be displayed. 
     {
     	// Set up UI components upon launching the game ("Intro" page): 
     	Button loginButton = new Button("Log In"); // "Log In" button for player to log into their account. 
     	Button createButton = new Button("Create Account"); // "Create Account" button for player to create a new account. 
     	
     	loginButton.setOnAction(e -> { // If the player has clicked the "Log In" button, 
-    		this.primaryStage.setScene(this.loginScreen); // then set the primaryStage to the "Login" screen. 
-    		this.primaryStage.setTitle("Log in to your account"); // Title of the Stage (on "Login" page).
+    		this.getPrimaryStage().setScene(this.getLoginScreen()); // then set the primaryStage to the "Login" screen. 
+    		this.getPrimaryStage().setTitle("Log in to your account"); // Title of the Stage (on "Login" page).
     	});
     	
     	createButton.setOnAction(e -> { // If the player has clicked the "Create Account" button, 
-    		this.primaryStage.setScene(this.createAccScreen); // then set the primaryStage to the "Create Account" screen. 
-    		this.primaryStage.setTitle("Create a new account"); // Title of the Stage (on "Create Account" page).
+    		this.getPrimaryStage().setScene(this.getCreateAccScreen()); // then set the primaryStage to the "Create Account" screen. 
+    		this.getPrimaryStage().setTitle("Create a new account"); // Title of the Stage (on "Create Account" page).
     	});
     	
     	VBox introLayout = new VBox(10, loginButton, createButton); // Format layout for "Intro" screen. 
 		introLayout.setAlignment(Pos.CENTER); // Align the UI components of the "Intro" screen to the center. 
-    	Scene introScene = new Scene(introLayout, 600, 600); // Create the Scene object with the VBox-centered layout. 
-    	
-    	return introScene; // Return the introScene to be assigned to this.introScreen Global Scene. 
+    	this.introScreen = new Scene(introLayout, 600, 600); // Create the Scene object with the VBox-centered layout and assign it to the global introScreen variable. 	
     }
     
-    /** Create and get the "Log In" Screen: **/
-    public Scene getLoginScreen()
+    /** Create and Set the "Log In" Screen: **/
+    public void setLoginScreen() // Create Scene object for this "Login" screen to be displayed. 
     {
     	// Set up UI components upon loading "Log In" screen: 
-    	this.loginUsernameField.setPromptText("Enter existing username"); // Prompt text. 
-		this.loginPasswordField.setPromptText("Enter password"); // Prompt text. 
+    	this.getLoginUserField().setPromptText("Enter existing username"); // Prompt text. 
+		this.getLoginPassField().setPromptText("Enter password"); // Prompt text. 
 		Button loginButton = new Button("Login"); // Button to submit account details to verify login. 
 		Button backButton = new Button("Back"); // Button to go back to "Intro" screen. 
 		
 		loginButton.setOnAction(e -> {
 			
-			String username = this.loginUsernameField.getText(); // Store the entered username into a String variable. 
-			String password = this.loginPasswordField.getText(); // Store the entered password into a String variable. 
+			String username = this.getLoginUserField().getText(); // Store the entered username into a String variable. 
+			String password = this.getLoginPassField().getText(); // Store the entered password into a String variable. 
 			
 			// Try-catch block to handle potential IOException (file read/write failure):
 			try {
-				this.allUsers = Files.readAllLines(this.userAccountsPath); // Read and put all existing players' username and password into the Global Accounts List (all of the lines, which are the details of the file). 
+				this.setUsersList(Files.readAllLines(this.getAccsPath())); // Read and put all existing players' username and password into the Global Accounts List (all of the lines, which are the details of the file). 
 				
-				for (String user : this.allUsers)
+				for (String user : this.getUsersList())
 				{
 					if (user.equals(username + "\t" + password)) // If the player successfully logs in, set the scene to the "Main Menu" scene. 
 					{
-						this.username = username; // Assign the entered username as the current username being used in the program. 
-						this.password = password; // Assign the entered password as the current password being used in the program. 
-						this.primaryStage.setScene(this.mainScreen); 
-						this.primaryStage.setTitle("Welcome, " + username + "! What game would you like to play today?"); // Change the primaryStage title to welcome the user. 
+						this.setUsername(username); // Assign the entered username as the current username being used in the program. 
+						this.setPassword(password); // Assign the entered password as the current password being used in the program. 
+						this.getPrimaryStage().setScene(this.getMainScreen()); 
+						this.getPrimaryStage().setTitle("Welcome, " + username + "! What game would you like to play today?"); // Change the primaryStage title to welcome the user. 
 					}
 				}
 				
@@ -135,47 +225,45 @@ public class GameManager extends Application {
 		});
 		
 		backButton.setOnAction(e -> { // If the "Back" button was pressed, 
-			this.primaryStage.setScene(this.introScreen); // then go back to the "Intro" screen. 
-			this.primaryStage.setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
+			this.getPrimaryStage().setScene(this.getIntroScreen()); // then go back to the "Intro" screen. 
+			this.getPrimaryStage().setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
 		});
 		
-		VBox loginLayout = new VBox(10, this.loginUsernameField, this.loginPasswordField, loginButton, backButton); // Format layout for "Log In" screen. 
+		VBox loginLayout = new VBox(10, this.getLoginUserField(), this.getLoginPassField(), loginButton, backButton); // Format layout for "Log In" screen. 
 		
 		loginLayout.setAlignment(Pos.CENTER); // Align the UI components of the "Log In" screen to the center. 
-		Scene loginScene = new Scene(loginLayout, 600, 600); // Create Scene object for "Log In" screen to be displayed. 
-    	
-    	return loginScene; // Return the loginScene to be assigned to this.loginScene Global Scene. 
+		this.loginScreen = new Scene(loginLayout, 600, 600); // Create Scene object for "Log In" screen to be displayed and assign it to the global loginScreen variable. 
     }
     
-    /** Create and get the "Create Account" Screen: **/
-    public Scene getCreateAccScreen()
+    /** Create and Set the "Create Account" Screen: **/
+    public void setCreateAccScreen() // Create Scene object for this "Create Account" screen to be displayed. 
     {
     	// Set up UI components upon loading "Log In" screen: 
-    	this.createUsernameField.setPromptText("Enter new username"); // Prompt text. 
-		this.createPasswordField.setPromptText("Enter password"); // Prompt text. 
+    	this.getCreateUserField().setPromptText("Enter new username"); // Prompt text. 
+		this.getCreatePassField().setPromptText("Enter password"); // Prompt text. 
 		Button createAccButton = new Button("Create User"); // Button to submit account details to create the new account. 
 		Button backButton = new Button("Back"); // Button to go back to "Intro" screen. 
 		
 		createAccButton.setOnAction(e -> { // If the "Create User" button was pressed, 
 			 
-			String username = this.createUsernameField.getText(); // Store the entered username into a String variable. 
-			String password = this.createPasswordField.getText(); // Store the entered password into a String variable. 
+			String username = this.getCreateUserField().getText(); // Store the entered username into a String variable. 
+			String password = this.getCreatePassField().getText(); // Store the entered password into a String variable. 
 			
 			// Try-catch block to handle potential IOException (file read/write failure): 
 			try {
-				this.allUsers = Files.readAllLines(this.userAccountsPath); // Read and put all existing players' username and password into the Global Accounts List (all of the lines, which are the details of the file). 
-				this.allUsers.add(username + "\t" + password); // Store the new username and its corresponding password to the next available index in the allUsers List. 
+				this.setUsersList(Files.readAllLines(this.getAccsPath())); // Read and put all existing players' username and password into the Global Accounts List (all of the lines, which are the details of the file). 
+				this.getUsersList().add(username + "\t" + password); // Store the new username and its corresponding password to the next available index in the allUsers List. 
 				
-				Files.write(this.userAccountsPath, // Get the path to the location of the new/existing file we wish to create/modify. 
-						this.allUsers, // Retrieve the List containing the different "lines" for each player's username and their respective password. 
+				Files.write(this.getAccsPath(), // Get the path to the location of the new/existing file we wish to create/modify. 
+						this.getUsersList(), // Retrieve the List containing the different "lines" for each player's username and their respective password. 
 						StandardOpenOption.CREATE, // Create the new user_accounts.txt file if it does not exist already. 
 						StandardOpenOption.TRUNCATE_EXISTING); // Otherwise, overwrite the existing user_accounts.txt file every time a new account is created. 
 				
 				// Once the account has been validated and thus created, 
-				this.username = username; // Assign the entered username as the current username being used in the program. 
-				this.password = password; // Assign the entered password as the current password being used in the program. 
-				this.primaryStage.setScene(this.mainScreen); // After validating creation of new account, open the "Main Menu" screen. 
-				this.primaryStage.setTitle("Welcome, " + username + "! What game would you like to play today?"); // Change the primaryStage title to welcome the user. 
+				this.setUsername(username); // Assign the entered username as the current username being used in the program. 
+				this.setPassword(password); // Assign the entered password as the current password being used in the program. 
+				this.getPrimaryStage().setScene(this.getMainScreen()); // After validating creation of new account, open the "Main Menu" screen. 
+				this.getPrimaryStage().setTitle("Welcome, " + username + "! What game would you like to play today?"); // Change the primaryStage title to welcome the user. 
 				
 			} catch (IOException e1) {
 				System.out.println("Error reading/writing file: " + e1.getMessage()); // Print message if we get an Input/Output exception with reading/writing the .txt file. 
@@ -183,20 +271,18 @@ public class GameManager extends Application {
 		});
 		
 		backButton.setOnAction(e -> { // If the "Back" button was pressed, 
-			this.primaryStage.setScene(this.introScreen); // then go back to the "Intro" screen. 
-			this.primaryStage.setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
+			this.getPrimaryStage().setScene(this.getIntroScreen()); // then go back to the "Intro" screen. 
+			this.getPrimaryStage().setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
 		});
 		
-		VBox createAccLayout = new VBox(10, this.createUsernameField, this.createPasswordField, createAccButton, backButton); // Format layout for "Create Account" screen. 
+		VBox createAccLayout = new VBox(10, this.getCreateUserField(), this.getCreatePassField(), createAccButton, backButton); // Format layout for "Create Account" screen. 
 		
 		createAccLayout.setAlignment(Pos.CENTER); // Align the UI components of the "Create Account" screen to the center. 
-		Scene createAccScene = new Scene(createAccLayout, 600, 600); // Create Scene object for "Create Account" screen to be displayed. 
-    	
-    	return createAccScene; // Return the createAccScene to be assigned to this.loginScene Global Scene. 
+		this.createAccScreen = new Scene(createAccLayout, 600, 600); // Create Scene object for "Create Account" screen to be displayed and assign it to the global createAccScreen variable. 
     }
     
-    /** Create and get the "Main Menu" Screen: **/
-    public Scene getMainScreen()
+    /** Create and Set the "Main Menu" Screen: **/
+    public void setMainScreen() // Create Scene object for this "Main Menu" screen to be displayed. 
     {
     	// Set up UI components upon loading "Main Menu" screen (the side providing the top 5 high scores):
     	Label highScoresBJ = new Label("Top 5 high scores for BlackJack:"); 
@@ -210,10 +296,10 @@ public class GameManager extends Application {
     	Button logout = new Button("Logout"); // Button to log out and go back to "Intro" screen. 
     	
     	logout.setOnAction(e -> { // If the user has selected "Logout" button, 
-    		this.username = null; // Set current username to null. 
-    		this.password = null; // Set current password to null. 
-    		this.primaryStage.setScene(this.introScreen); // Go back to the "Intro" screen where it asked player to login or create an account. 
-    		this.primaryStage.setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
+    		this.setUsername(null); // Set current username to null. 
+    		this.setPassword(null); // Set current password to null. 
+    		this.getPrimaryStage().setScene(this.getIntroScreen()); // Go back to the "Intro" screen where it asked player to login or create an account. 
+    		this.getPrimaryStage().setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
     	});
     	
     	// Layout for the side providing the top 5 high scores:
@@ -227,9 +313,7 @@ public class GameManager extends Application {
     	// Overall screen layout to hold the scoresLayout VBox and the gamesButtonsLayout VBox: 
     	HBox mainLayout = new HBox(100, scoresLayout, gamesButtonsLayout); // Put components into a Horizontal Box. 
     	mainLayout.setAlignment(Pos.CENTER);
-    	Scene mainScreen = new Scene(mainLayout, 600, 600); // Create Scene object for this "Main Menu" screen to be displayed. 
-    	
-    	return mainScreen; // Return the mainScreen to be assigned to this.mainScreen Global Scene. 
+    	this.mainScreen = new Scene(mainLayout, 600, 600); // Create Scene object for this "Main Menu" screen to be displayed and assign it to the global mainScreen variable. 
     }
    
     /** Main method to launch the JavaFX program: **/ 
