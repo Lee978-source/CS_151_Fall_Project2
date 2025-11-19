@@ -42,7 +42,7 @@ public class GameManager extends Application {
 	
 	// Global Accounts List and Path (to .txt file) to hold all usernames and passwords:
 	private List<String> allUsers; // Holds ALL players' username and password (in each index). 
-	private final Path userAccountsPath = Paths.get("game_state/user_accounts.txt"); // Get path to the location of the user_accounts.txt file (does NOT know details of the file yet). 
+	private final Path userAccountsPath = Paths.get("gamestate/user_accounts.txt"); // Get path to the location of the user_accounts.txt file (does NOT know details of the file yet). 
 	
 	// Global Instance Variables to track current player:
 	private String username; 
