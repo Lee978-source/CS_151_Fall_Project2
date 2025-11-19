@@ -3,7 +3,7 @@
  * @version 1.0
  * CS151 Fall 2025 - Project 2
  */
-package game_state; 
+package gamestate; 
 
 import java.util.ArrayList; // To create ArrayList objects. 
 import java.util.List; // To create List objects. 
