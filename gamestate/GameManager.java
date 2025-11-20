@@ -43,26 +43,34 @@ public class GameManager extends Application {
 	// Global Accounts List and Path (to .txt file) to hold all usernames and passwords:
 	private List<String> allUsers; // Holds ALL players' username and password (in each index). 
 	private final Path userAccountsPath = Paths.get("gamestate/user_accounts.txt"); // Get path to the location of the user_accounts.txt file (does NOT know details of the file yet). 
-	
-	// Global Instance Variables to track current player:
+
+    // High score storage
+    private List<String> allHighScores;
+    private final Path highScoresPath = Paths.get("gamestate/high_score.txt");
+
+    // Global Instance Variables to track current player:
 	private String username; 
-	private String password; 
-	
+	private String password;
+
     @Override 
     public void start(Stage primaryStage) { 
     	
     	if (Files.exists(this.getAccsPath()) && Files.isReadable(this.getAccsPath())) // Make sure the data .txt files exist and are readable. 
     	{
     		// Store the primaryStage variable into the primaryStage Global Instance Variable:
-    		this.setPrimaryStage(primaryStage); 
+    		this.setPrimaryStage(primaryStage);
+
+            //Load high scores before building the main menu
+            loadHighScores();
         	
         	// Call "setter" methods to create each of the Global Scenes: 
         	this.setIntroScreen(); // Create Scene object for this "Intro" screen to be displayed. 
         	this.setLoginScreen(); // Create Scene object for this "Login" screen to be displayed. 
         	this.setCreateAccScreen(); // Create Scene object for this "Create Account" screen to be displayed. 
-        	this.setMainScreen(); // Create Scene object for this "Main Menu" screen to be displayed. 
-        	
-        	this.getPrimaryStage().setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
+        	this.loadHighScores(); //Create Scene object for high scores
+            this.setMainScreen(); // Create Scene object for this "Main Menu" screen to be displayed.
+
+            this.getPrimaryStage().setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
         	this.getPrimaryStage().setScene(this.getIntroScreen()); // Set this "Intro" screen as the displayed scene. 
         	this.getPrimaryStage().show(); // Raise the stage curtains! 
     	}
@@ -142,7 +150,24 @@ public class GameManager extends Application {
     {
     	return this.mainScreen; // Return the global mainScreen variable. 
     }
-    
+
+
+    /** getters for High Score retrieval **/
+    public Path getHighScoresPath() {
+        return this.highScoresPath;
+    }
+
+    public List<String> getHighScoresList() {
+        return this.allHighScores;
+    }
+
+
+    /** Setter method to get high score **/
+    public void setHighScoresList(List<String> scores) {
+        this.allHighScores = scores;
+    }
+
+
     /** Setter methods: **/
     public void setUsername(String username) 
     {
@@ -164,7 +189,54 @@ public class GameManager extends Application {
     	// Store the primaryStage variable into the primaryStage Global Instance Variable:
     	this.primaryStage = primaryStage; 
     }
-    
+
+
+
+    //private helper method for high score
+    private void loadHighScores() {
+        allHighScores = new ArrayList<>();
+
+        try {
+            // If file does not exist, create an empty one
+            if (!Files.exists(highScoresPath)) {
+                Files.createFile(highScoresPath);
+            }
+
+            allHighScores.addAll(Files.readAllLines(highScoresPath));
+        } catch (IOException e) {
+            System.out.println("Error loading high scores: " + e.getMessage());
+        }
+    }
+
+    private List<String> getTopScoresForGame(String gameCode, int limit) {
+        List<String> scoresForGame = new ArrayList<>();
+
+        for (String line : allHighScores) {
+            String[] parts = line.split(",");
+            if (parts.length == 3 && parts[1].equalsIgnoreCase(gameCode)) {
+                // Format like: "alice - 1200"
+                String username = parts[0];
+                int score = Integer.parseInt(parts[2]);
+                scoresForGame.add(username + " - " + score);
+            }
+        }
+
+        // Sort descending by score
+        scoresForGame.sort((a, b) -> {
+            int scoreA = Integer.parseInt(a.substring(a.lastIndexOf('-') + 1).trim());
+            int scoreB = Integer.parseInt(b.substring(b.lastIndexOf('-') + 1).trim());
+            return Integer.compare(scoreB, scoreA); // highest first
+        });
+
+        // Trim to `limit` entries
+        if (scoresForGame.size() > limit) {
+            return scoresForGame.subList(0, limit);
+        } else {
+            return scoresForGame;
+        }
+    }
+
+
     /** Create and Set the "Intro" Screen: **/
     public void setIntroScreen() // Create Scene object for this "Intro" screen to be displayed. 
     {
@@ -280,13 +352,31 @@ public class GameManager extends Application {
 		createAccLayout.setAlignment(Pos.CENTER); // Align the UI components of the "Create Account" screen to the center. 
 		this.createAccScreen = new Scene(createAccLayout, 600, 600); // Create Scene object for "Create Account" screen to be displayed and assign it to the global createAccScreen variable. 
     }
-    
+
+
+
     /** Create and Set the "Main Menu" Screen: **/
     public void setMainScreen() // Create Scene object for this "Main Menu" screen to be displayed. 
     {
     	// Set up UI components upon loading "Main Menu" screen (the side providing the top 5 high scores):
     	Label highScoresBJ = new Label("Top 5 high scores for BlackJack:"); 
-    	Label highScoresSnake = new Label("Top 5 high scores for Snake Game:"); 
+    	Label highScoresSnake = new Label("Top 5 high scores for Snake Game:");
+
+        //Show the first 5 highest scores for BJ
+        VBox bjBox = new VBox(5); //5 px space between rows
+        bjBox.getChildren().add(highScoresBJ);
+        for(String line : getTopScoresForGame("BJ", 5)){
+            bjBox.getChildren().add(new Label(line));
+        }
+
+        //Show the first 5 highest scores for Snake
+        VBox snakeBox = new VBox(5);
+        snakeBox.getChildren().add(highScoresSnake);
+        for(String line: getTopScoresForGame("SNAKE", 5)) {
+            snakeBox.getChildren().add(new Label(line));
+        }
+
+
     	
     	// Set up UI components upon loading "Main Menu" screen (the side providing game options):
     	Button launchBlackJack = new Button("Play BlackJack"); // Button to launch the BlackJack game. 
@@ -301,21 +391,23 @@ public class GameManager extends Application {
     		this.getPrimaryStage().setScene(this.getIntroScreen()); // Go back to the "Intro" screen where it asked player to login or create an account. 
     		this.getPrimaryStage().setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
     	});
-    	
-    	// Layout for the side providing the top 5 high scores:
-    	VBox scoresLayout = new VBox(10, highScoresBJ, highScoresSnake); // Put components into a Vertical Box. 
-    	scoresLayout.setAlignment(Pos.CENTER); // Align the UI components to the center. 
-    	
-    	// Layout for the side providing game options: 
-    	VBox gamesButtonsLayout = new VBox(10, launchBlackJack, launchSnake, empty1, empty2, logout); // Put components into a Vertical Box. 
-    	gamesButtonsLayout.setAlignment(Pos.CENTER); // Align UI components to the center. 
+
+        // Layout for the side providing the top 5 high scores:
+        VBox scoresLayout = new VBox(20, bjBox, snakeBox);
+        scoresLayout.setAlignment(Pos.CENTER);
+
+    	// Layout for the side providing game options:
+    	VBox gamesButtonsLayout = new VBox(10, launchBlackJack, launchSnake, empty1, empty2, logout); // Put components into a Vertical Box.
+    	gamesButtonsLayout.setAlignment(Pos.CENTER); // Align UI components to the center.
     	
     	// Overall screen layout to hold the scoresLayout VBox and the gamesButtonsLayout VBox: 
     	HBox mainLayout = new HBox(100, scoresLayout, gamesButtonsLayout); // Put components into a Horizontal Box. 
     	mainLayout.setAlignment(Pos.CENTER);
     	this.mainScreen = new Scene(mainLayout, 600, 600); // Create Scene object for this "Main Menu" screen to be displayed and assign it to the global mainScreen variable. 
     }
-   
+
+
+
     /** Main method to launch the JavaFX program: **/ 
     public static void main(String[] args)
     {
