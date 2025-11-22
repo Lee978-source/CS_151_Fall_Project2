@@ -24,9 +24,6 @@ public class SnakeMainScreen {
         root.setStyle("-fx-background-color: #2C3E50;");
     }
 
-
-
-
     private void startGame() {
 
     }
