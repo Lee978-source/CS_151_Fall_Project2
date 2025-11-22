@@ -1,4 +1,4 @@
-package snakegame;
+package gamestate.snakegame;
 public class Point {
     private int x;
     private int y;
@@ -24,5 +24,15 @@ public class Point {
         this.y = y;
     }
 
-    
+    @Override
+    public boolean equals(Objects obj) {
+        if (!(obj instanceof Point)) return false;
+        Point other = (Point) obj;
+        return this.x == other.x && this.y == other.y;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }
