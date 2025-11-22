@@ -2,3 +2,7 @@
 *.iml
 /shelf/
 /workspace.xml
+out/
+build/
+target/
+*.class
