@@ -54,7 +54,6 @@ public class SnakeMainScreen {
         );
 
         root.getChildren().addAll(title, instructionsLabel, backButton);
-
         Scene instructionsScene = new Scene(root, 800, 600);
         primaryStage.setScene(instructionsScene);
     }
