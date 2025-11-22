@@ -22,6 +22,7 @@ public class SnakeMainScreen {
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(50));
         root.setStyle("-fx-background-color: #2C3E50;");
+        return null; // Placeholder - Note by Ethan Le: make sure you have a return statement and are returning the Scene object.
     }
 
     private void startGame() {
@@ -56,6 +57,11 @@ public class SnakeMainScreen {
         root.getChildren().addAll(title, instructionsLabel, backButton);
         Scene instructionsScene = new Scene(root, 800, 600);
         primaryStage.setScene(instructionsScene);
+    }
+
+    // Note by Ethan Le: Helper method to style buttons (example: line 52).
+    private void styleButton(Button button, String color) {
+        button.setStyle("-fx-background-color: " + color + "; -fx-text-fill: white;");
     }
 
     private void backToMainMenu() {

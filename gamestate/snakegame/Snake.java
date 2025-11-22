@@ -1,4 +1,4 @@
-package snakegame;
+package gamestate.snakegame;
 import java.util.LinkedList;
 import java.util.Random;
 

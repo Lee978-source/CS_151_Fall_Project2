@@ -25,7 +25,7 @@ public class Point {
     }
 
     @Override
-    public boolean equals(Objects obj) {
+    public boolean equals(Object obj) {
         if (!(obj instanceof Point)) return false;
         Point other = (Point) obj;
         return this.x == other.x && this.y == other.y;
