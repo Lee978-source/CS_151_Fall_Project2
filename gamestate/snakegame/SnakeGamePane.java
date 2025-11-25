@@ -5,6 +5,7 @@
  */
 
 package gamestate.snakegame;
+
 import gamestate.snakegame.Snake;
 
 import javax.swing.*;
