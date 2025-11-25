@@ -1,41 +1,46 @@
-package gamestate.snakegame;
+/** 
+ * @author [Phuong Hua] 
+ * @version 1.0
+ * CS151 Fall 2025 - Project 2
+ */
+
+ package gamestate.snakegame;
 import java.util.LinkedList;
-import java.util.Random;
 
 public class Snake {
-    private LinkedList<Point> body;
-    private Direction currentDirection;
-    private Direction nextDirection;
+    private LinkedList<Integer> body;
+    private int currentDirection;
+    private int nextDirection;
     private boolean grow;
 
-    public Snake(Point initialPosition, Direction initialDirection) {
-        body = new LinkedList<>();
+    public Snake(int initialPosition, int initialDirection) {
+        body = new LinkedList<Integer>();
         body.add(initialPosition);
         currentDirection = initialDirection;
         nextDirection = initialDirection;
         grow = false;
     }
 
-    public LinkedList<Point> getBody() {
+    public LinkedList<Integer> getBody() {
         return body;
     }
 
-    public Direction getCurrentDirection() {
+    public int getCurrentDirection() {
         return currentDirection;
     }
 
-    public void setNextDirection(Direction direction) {
+    public void setNextDirection(int direction) {
         this.nextDirection = direction;
     }
 
-    public Point getHead() {
+    public Integer getHead() {
         return body.getFirst();
     }
 
     public void move() {
         currentDirection = nextDirection;
-        Point head = getHead();
-        Point newHead = null;
+        Integer head = getHead();
+        Integer newHead = null;
         switch (currentDirection) {
             case UP:
                 newHead = new Point(head.getX(), head.getY() - 1);

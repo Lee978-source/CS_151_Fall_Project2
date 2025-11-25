@@ -1,4 +1,10 @@
-package gamestate.snakegame;
+/** 
+ * @author [Phuong Hua] 
+ * @version 1.0
+ * CS151 Fall 2025 - Project 2
+ */
+
+ package gamestate.snakegame;
 
 public enum Direction {
     UP(0, -1), DOWN(0, 1), LEFT(-1, 0), RIGHT(1, 0);
