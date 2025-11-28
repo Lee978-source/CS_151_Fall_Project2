@@ -100,27 +100,164 @@ public class BlackJackEngine {
          * User stands, AIs and dealer finish drawing
          */
 
-        public void userStand(){
-            if (roundOver) {
-                return;
-            }
-
-            user.stands = true;
-
-            // Players take their turns
-            runPlayer1Turn(Player1);
-            runPlayer2Turn(Player2);
-
-            // Dealer turn: hit on <= 16
-            while (dealerHandValue <= 16) {
-                dealerHandValue += drawCard();
-            }
-            dealerStands = true;
-
-            // settle all three vs dealer
-            settleRound();
-        }
 
     }
+
+    public void userStand(){
+        if (roundOver) {
+            return;
+        }
+
+        user.stands = true;
+
+        // Players take their turns
+        runAiTurn(player1);
+        runAiTurn(player2);
+
+        // Dealer turn: hit on <= 17
+        while (dealerHandValue <= 17) {
+            dealerHandValue += drawCard();
+        }
+        dealerStands = true;
+
+        // settle all three vs dealer
+        settleRound();
+    }
+
+    /**
+     * AI Logic
+     * We want AI to hit while hand is < 16
+     */
+    private void runAiTurn(PlayerState ai){
+        if(roundOver) return;
+
+        while (ai.handValue < 16){
+            ai.handValue += drawCard();
+            if(ai.handValue > 21){
+                //this is a bust
+                break;
+            }
+        }
+        ai.stands = true;
+    }
+    // Internal helper
+    private int drawCard() {
+        // 2-11 inclusive (treat 11 as Ace)
+        return rand.nextInt(10) + 2;
+    }
+
+    private void checkUserBlackjackOnDeal() {
+        if (roundOver) return;
+
+        boolean userBJ   = (user.handValue == 21);
+        boolean dealerBJ = (dealerHandValue == 21);
+
+        if (userBJ || dealerBJ) {
+            if (userBJ && !dealerBJ) {
+                win(user);
+                lastUserNumber = user.bet;
+            } else if (!userBJ && dealerBJ) {
+                lose(user);
+                lastUserNumber = -user.bet;
+            } else {
+                push(user);
+                lastUserNumber = 0;
+            }
+            roundOver = true;
+        }
+    }
+
+    private void checkUserBust() {
+        if (user.handValue > 21) {
+            lose(user);
+            lastUserNumber = -user.bet;
+            roundOver = true;
+        }
+    }
+
+    /**
+     * After everyone is done, compare each non-dealer player vs dealer
+     * and update balances.
+     */
+    private void settleRound() {
+        if (roundOver) return;
+
+        settleOnePlayer(user);
+        settleOnePlayer(player1);
+        settleOnePlayer(player2);
+
+        roundOver = true;
+    }
+
+    private void settleOnePlayer(PlayerState p) {
+        if (p.handValue > 21) {
+            // bust – auto lose
+            lose(p);
+            if (p == user) lastUserNumber = -p.bet;
+            return;
+        }
+
+        if (dealerHandValue > 21) {
+            win(p);
+            if (p == user) lastUserNumber = p.bet;
+        } else if (p.handValue > dealerHandValue) {
+            win(p);
+            if (p == user) lastUserNumber = p.bet;
+        } else if (p.handValue < dealerHandValue) {
+            lose(p);
+            if (p == user) lastUserNumber = -p.bet;
+        } else {
+            push(p);
+            if (p == user) lastUserNumber = 0;
+        }
+    }
+
+    private void win(PlayerState p) {
+        p.balance += p.bet;
+    }
+
+    private void lose(PlayerState p) {
+        p.balance -= p.bet;
+    }
+
+    private void push(PlayerState p) {
+        // nothing changes
+    }
+
+    // ---------- getters for UI/debug ----------
+
+    public int getUserHandValue()   {
+        return user.handValue;
+    }
+    public int getAi1HandValue()    {
+        return player1.handValue;
+    }
+    public int getAi2HandValue()    {
+        return player2.handValue;
+    }
+    public int getDealerHandValue() {
+        return dealerHandValue;
+    }
+
+    public int getUserBalance() {
+        return user.balance;
+    }
+    public int getAi1Balance()  {
+        return player1.balance;
+    }
+    public int getAi2Balance()  {
+        return player2.balance;
+    }
+
+    public int getUserBet() {
+        return user.bet;
+    }
+
+    public int getLastUserDelta() {
+        return lastUserNumber;
+    }
+
+    public boolean isRoundOver() { return roundOver; }
+
 }
 
