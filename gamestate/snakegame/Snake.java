@@ -10,20 +10,28 @@
 // Package: (same as your snake package)
 // ============================================
 
-package snake; // Change this to match your package
+package gamestate.snakegame; // Change this to match your package
 
 import gamestate.GameManager;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.ArrayList;
 
-public class SnakeGame {
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
+
+public class Snake {
     private static final int GRID_WIDTH = 30;
     private static final int GRID_HEIGHT = 20;
     private static final int POINTS_PER_FOOD = 10;
+    private final List<Rectangle> snake = new ArrayList<>(); // Global List to hold all of the Snake's parts (individual squares binded together).
+    private static final int SNAKE_LENGTH_WIDTH = 30; // Define the length and width of every square of the Snake (length = width to make a square).
 
-    private Snake snake;
+    //private Snake snake;
     private Food food;
     private int score;
     private boolean gameOver;
@@ -31,14 +39,34 @@ public class SnakeGame {
     private String username;
     private GameManager gameManager; // Reference to GameManager
 
-    public SnakeGame(String username, GameManager gameManager) {
-        this.username = username;
-        this.gameManager = gameManager;
-        initGame();
+    public Snake()
+    {
+        Rectangle square = new Rectangle(SNAKE_LENGTH_WIDTH, SNAKE_LENGTH_WIDTH); // Create the head for the Snake.
+        square.setFill(Color.GREEN); // Set the color of the Snake head (different from other Snake pieces).
+
+        this.snake.add(square); // Add the head to the Snake.
+    }
+
+    public Rectangle getSnakeHead()
+    {
+        return this.snake.getFirst(); // Return the first Rectangle of the Snake List (the head of the Snake).
+    }
+
+    public void growSnake()
+    {
+        Rectangle square = new Rectangle(SNAKE_LENGTH_WIDTH, SNAKE_LENGTH_WIDTH); // Create a new piece to add to the Snake.
+        square.setFill(Color.AQUA); // Set the color of the new Snake component.
+
+        this.snake.add(square); // Add the square (make the Snake longer).
+    }
+
+    public void move(Scene snakeGamePane)
+    {
+        // To be filled in - Ethan Le
     }
 
     private void initGame() {
-        snake = new Snake(GRID_WIDTH / 2, GRID_HEIGHT / 2);
+        //snake = new Snake();
         food = new Food();
         food.spawn(GRID_WIDTH, GRID_HEIGHT, snake);
         score = 0;
@@ -49,7 +77,7 @@ public class SnakeGame {
     public void update() {
         if (gameOver || paused) return;
 
-        snake.move();
+        snake.move(); // The actual call of the "move()" method would likely be in the SnakeGamePane class - Ethan Le
 
         if (snake.getHead().equals(food.getPosition())) {
             snake.grow();
@@ -123,7 +151,7 @@ public class SnakeGame {
     }
 
     // Getters
-    public Snake getSnake() { return snake; }
+    public List<Rectangle> getSnake() { return this.snake; } // Return the ArrayList containing all of the current pieces of the Snake.
     public Food getFood() { return food; }
     public int getScore() { return score; }
     public boolean isGameOver() { return gameOver; }

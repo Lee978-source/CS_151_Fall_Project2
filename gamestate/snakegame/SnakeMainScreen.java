@@ -19,11 +19,13 @@ import javafx.stage.Stage;
 public class SnakeMainScreen {
     private Stage primaryStage;
     private String username;
+    private GameManager gameManager;
     private Scene mainMenuScene;
 
-    public SnakeMainScreen(Stage primaryStage, String username) {
+    public SnakeMainScreen(Stage primaryStage, String username, GameManager gameManager) {
         this.primaryStage = primaryStage;
         this.username = username;
+        this.gameManager = gameManager;
     }
 
     public void createMainMenuScene() {
@@ -57,9 +59,9 @@ public class SnakeMainScreen {
     }
 
     private void startGame() {
-        SnakeGamePane snakeGamePane = new SnakeGamePane(primaryStage, username);
-        //primaryStage.setScene(snakeGamePane.getGameScene()); // Ethan Le - please fill this in so I can help with the rest of the interface! :)
-        primaryStage.show();
+        SnakeGamePane snakeGamePane = new SnakeGamePane(this.primaryStage, this.username, this.gameManager);
+        this.primaryStage.setScene(snakeGamePane.createGameScene()); // Create the Scene object of the Snake Game Pane and set it as the current Scene.
+        this.primaryStage.show();
 
     }
 

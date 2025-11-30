@@ -48,11 +48,12 @@ public class SnakeGamePane {
         this.primaryStage = primaryStage;
         this.username = username;
         this.gameManager = gameManager;
-        this.game = new Snake(username,gameManager);
+        this.game = new Snake();
     }
 
     public Scene createGameScene() {
         BorderPane root = new BorderPane();
+        root.getChildren().add(this.game.getSnakeHead()); // Add the Snake's Head to the game frame.
         root.setStyle("-fx-background-color: #1e272eff;");
 
         canvas = new Canvas(600, 500);
@@ -215,7 +216,7 @@ public class SnakeGamePane {
             gameLoop.stop();
         }
         SnakeMainScreen mainScreen = new SnakeMainScreen(primaryStage, username, gameManager);
-        primaryStage.setScene(mainScreen.createMainMenuScene());
+        primaryStage.setScene(mainScreen.getMainMenuScene());
         primaryStage.setTitle("Snake Game Menu");
     }
 
