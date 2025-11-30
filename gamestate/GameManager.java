@@ -267,7 +267,7 @@ public class GameManager extends Application {
 		this.getLoginPassField().setPromptText("Enter password"); // Prompt text. 
 		Button loginButton = new Button("Login"); // Button to submit account details to verify login. 
 		Button backButton = new Button("Back"); // Button to go back to "Intro" screen.
-        Label error = new Label(""); // Label to display error message logging in, if necessary.
+        Label errorText = new Label(""); // Label to display error message logging in, if necessary.
 		
 		loginButton.setOnAction(e -> {
 			
@@ -286,12 +286,12 @@ public class GameManager extends Application {
 						this.setPassword(password); // Assign the entered password as the current password being used in the program. 
 						this.getPrimaryStage().setScene(this.getMainScreen()); 
 						this.getPrimaryStage().setTitle("Welcome, " + username + "! What game would you like to play today?"); // Change the primaryStage title to welcome the user. 
-					    error.setText(""); // Clear out the error message (if any) if user successfully logs in.
+					    errorText.setText(""); // Clear out the error message (if any) if user successfully logs in.
                         return;
                     }
 				}
 
-                error.setText("Username and Password do not match! Try again!"); // Set the error message label if username and password do not match.
+                errorText.setText("Username and Password do not match! Try again!"); // Set the error message label if username and password do not match.
 				
 				//System.out.println("Failure!"); // For debugging. 
 			}
@@ -302,12 +302,12 @@ public class GameManager extends Application {
 		});
 		
 		backButton.setOnAction(e -> { // If the "Back" button was pressed,
-            error.setText(""); // Clear out the error message (if any) if user goes to previous page.
+            errorText.setText(""); // Clear out the error message (if any) if user returns to previous page.
 			this.getPrimaryStage().setScene(this.getIntroScreen()); // then go back to the "Intro" screen. 
 			this.getPrimaryStage().setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
 		});
 		
-		VBox loginLayout = new VBox(10, this.getLoginUserField(), this.getLoginPassField(), error, loginButton, backButton); // Format layout for "Log In" screen.
+		VBox loginLayout = new VBox(10, this.getLoginUserField(), this.getLoginPassField(), errorText, loginButton, backButton); // Format layout for "Log In" screen.
 		
 		loginLayout.setAlignment(Pos.CENTER); // Align the UI components of the "Log In" screen to the center. 
 		this.loginScreen = new Scene(loginLayout, 600, 600); // Create Scene object for "Log In" screen to be displayed and assign it to the global loginScreen variable. 
@@ -318,48 +318,59 @@ public class GameManager extends Application {
     {
     	// Set up UI components upon loading "Log In" screen: 
     	this.getCreateUserField().setPromptText("Enter new username"); // Prompt text. 
-		this.getCreatePassField().setPromptText("Enter password"); // Prompt text. 
+		this.getCreatePassField().setPromptText("Enter password (must be 6 characters long)"); // Prompt text.
 		Button createAccButton = new Button("Create User"); // Button to submit account details to create the new account. 
-		Button backButton = new Button("Back"); // Button to go back to "Intro" screen. 
+		Button backButton = new Button("Back"); // Button to go back to "Intro" screen.
+        Label guideText = new Label(""); // Label to be displayed if user needs help creating their account.
 		
 		createAccButton.setOnAction(e -> { // If the "Create User" button was pressed, 
 			 
-			String username = this.getCreateUserField().getText(); // Store the entered username into a String variable. 
-			String password = this.getCreatePassField().getText(); // Store the entered password into a String variable. 
-			
-			// Try-catch block to handle potential IOException (file read/write failure): 
-			try {
-				this.setUsersList(Files.readAllLines(this.getAccsPath())); // Read and put all existing players' username and password into the Global Accounts List (all of the lines, which are the details of the file). 
-				this.getUsersList().add(username + "\t" + password); // Store the new username and its corresponding password to the next available index in the allUsers List. 
-				
-				Files.write(this.getAccsPath(), // Get the path to the location of the new/existing file we wish to create/modify. 
-						this.getUsersList(), // Retrieve the List containing the different "lines" for each player's username and their respective password. 
-						StandardOpenOption.CREATE, // Create the new user_accounts.txt file if it does not exist already. 
-						StandardOpenOption.TRUNCATE_EXISTING); // Otherwise, overwrite the existing user_accounts.txt file every time a new account is created. 
-				
-				// Once the account has been validated and thus created, 
-				this.setUsername(username); // Assign the entered username as the current username being used in the program. 
-				this.setPassword(password); // Assign the entered password as the current password being used in the program. 
-				this.getPrimaryStage().setScene(this.getMainScreen()); // After validating creation of new account, open the "Main Menu" screen. 
-				this.getPrimaryStage().setTitle("Welcome, " + username + "! What game would you like to play today?"); // Change the primaryStage title to welcome the user. 
-				
-			} catch (IOException e1) {
-				System.out.println("Error reading/writing file: " + e1.getMessage()); // Print message if we get an Input/Output exception with reading/writing the .txt file. 
-			} 
+			String username = this.getCreateUserField().getText().strip(); // Store the entered username into a String variable.
+			String password = this.getCreatePassField().getText().strip(); // Store the entered password into a String variable.
+
+            if (password.length() >= 6)
+            {
+                guideText.setText(""); // Clear the guide label (if any) upon successful account creation.
+
+                // Try-catch block to handle potential IOException (file read/write failure):
+                try {
+                    this.setUsersList(Files.readAllLines(this.getAccsPath())); // Read and put all existing players' username and password into the Global Accounts List (all of the lines, which are the details of the file).
+                    this.getUsersList().add(username + "\t" + password); // Store the new username and its corresponding password to the next available index in the allUsers List.
+
+                    Files.write(this.getAccsPath(), // Get the path to the location of the new/existing file we wish to create/modify.
+                            this.getUsersList(), // Retrieve the List containing the different "lines" for each player's username and their respective password.
+                            StandardOpenOption.CREATE, // Create the new user_accounts.txt file if it does not exist already.
+                            StandardOpenOption.TRUNCATE_EXISTING); // Otherwise, overwrite the existing user_accounts.txt file every time a new account is created.
+
+                    // Once the account has been validated and thus created,
+                    this.setUsername(username); // Assign the entered username as the current username being used in the program.
+                    this.setPassword(password); // Assign the entered password as the current password being used in the program.
+                    this.getPrimaryStage().setScene(this.getMainScreen()); // After validating creation of new account, open the "Main Menu" screen.
+                    this.getPrimaryStage().setTitle("Welcome, " + username + "! What game would you like to play today?"); // Change the primaryStage title to welcome the user.
+
+                } catch (IOException e1) {
+                    System.out.println("Error reading/writing file: " + e1.getMessage()); // Print message if we get an Input/Output exception with reading/writing the .txt file.
+                }
+            }
+
+            else
+            {
+                guideText.setText("Password must be at least 6 characters long! Try again!"); // Set the guide label to inform user of password requirement.
+            }
+
 		});
 		
-		backButton.setOnAction(e -> { // If the "Back" button was pressed, 
+		backButton.setOnAction(e -> { // If the "Back" button was pressed,
+            guideText.setText(""); // Clear the guide label (if any) if user returns to previous page.
 			this.getPrimaryStage().setScene(this.getIntroScreen()); // then go back to the "Intro" screen. 
 			this.getPrimaryStage().setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
 		});
 		
-		VBox createAccLayout = new VBox(10, this.getCreateUserField(), this.getCreatePassField(), createAccButton, backButton); // Format layout for "Create Account" screen. 
+		VBox createAccLayout = new VBox(10, this.getCreateUserField(), this.getCreatePassField(), guideText, createAccButton, backButton); // Format layout for "Create Account" screen.
 		
 		createAccLayout.setAlignment(Pos.CENTER); // Align the UI components of the "Create Account" screen to the center. 
 		this.createAccScreen = new Scene(createAccLayout, 600, 600); // Create Scene object for "Create Account" screen to be displayed and assign it to the global createAccScreen variable. 
     }
-
-
 
     /** Create and Set the "Main Menu" Screen: **/
     public void setMainScreen() // Create Scene object for this "Main Menu" screen to be displayed. 
