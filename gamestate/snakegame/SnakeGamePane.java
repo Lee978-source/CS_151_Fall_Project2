@@ -3,7 +3,7 @@
  * @version 1.0
  * CS151 Fall 2025 - Project 2
  */
-
+/*
 package gamestate.snakegame;
 
 import gamestate.snakegame.Snake;
@@ -27,3 +27,4 @@ public class SnakeGamePane {
         frame.pack();
     }
 }
+*/

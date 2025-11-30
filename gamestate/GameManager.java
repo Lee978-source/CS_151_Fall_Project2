@@ -266,7 +266,8 @@ public class GameManager extends Application {
     	this.getLoginUserField().setPromptText("Enter existing username"); // Prompt text. 
 		this.getLoginPassField().setPromptText("Enter password"); // Prompt text. 
 		Button loginButton = new Button("Login"); // Button to submit account details to verify login. 
-		Button backButton = new Button("Back"); // Button to go back to "Intro" screen. 
+		Button backButton = new Button("Back"); // Button to go back to "Intro" screen.
+        Label error = new Label(""); // Label to display error message logging in, if necessary.
 		
 		loginButton.setOnAction(e -> {
 			
@@ -285,8 +286,12 @@ public class GameManager extends Application {
 						this.setPassword(password); // Assign the entered password as the current password being used in the program. 
 						this.getPrimaryStage().setScene(this.getMainScreen()); 
 						this.getPrimaryStage().setTitle("Welcome, " + username + "! What game would you like to play today?"); // Change the primaryStage title to welcome the user. 
-					}
+					    error.setText(""); // Clear out the error message (if any) if user successfully logs in.
+                        return;
+                    }
 				}
+
+                error.setText("Username and Password do not match! Try again!"); // Set the error message label if username and password do not match.
 				
 				//System.out.println("Failure!"); // For debugging. 
 			}
@@ -296,12 +301,13 @@ public class GameManager extends Application {
 			}
 		});
 		
-		backButton.setOnAction(e -> { // If the "Back" button was pressed, 
+		backButton.setOnAction(e -> { // If the "Back" button was pressed,
+            error.setText(""); // Clear out the error message (if any) if user goes to previous page.
 			this.getPrimaryStage().setScene(this.getIntroScreen()); // then go back to the "Intro" screen. 
 			this.getPrimaryStage().setTitle("Awesome Game Paradise!"); // Title of the Stage (on "Intro" page).
 		});
 		
-		VBox loginLayout = new VBox(10, this.getLoginUserField(), this.getLoginPassField(), loginButton, backButton); // Format layout for "Log In" screen. 
+		VBox loginLayout = new VBox(10, this.getLoginUserField(), this.getLoginPassField(), error, loginButton, backButton); // Format layout for "Log In" screen.
 		
 		loginLayout.setAlignment(Pos.CENTER); // Align the UI components of the "Log In" screen to the center. 
 		this.loginScreen = new Scene(loginLayout, 600, 600); // Create Scene object for "Log In" screen to be displayed and assign it to the global loginScreen variable. 

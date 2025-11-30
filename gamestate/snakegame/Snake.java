@@ -3,7 +3,7 @@
  * @version 1.0
  * CS151 Fall 2025 - Project 2
  */
-
+/*
  package gamestate.snakegame;
 import java.util.LinkedList;
 
@@ -70,3 +70,4 @@ public class Snake {
 
     
 }
+*/
