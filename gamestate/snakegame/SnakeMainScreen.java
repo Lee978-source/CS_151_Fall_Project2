@@ -3,7 +3,7 @@
  * @version 1.0
  * CS151 Fall 2025 - Project 2
  */
-/*
+
 package gamestate.snakegame;
 import gamestate.GameManager;
 import javafx.geometry.Insets;
@@ -19,14 +19,14 @@ import javafx.stage.Stage;
 public class SnakeMainScreen {
     private Stage primaryStage;
     private String username;
+    private Scene mainMenuScene;
 
-    public SnakeMainScreen(Stage primaryStage, String username, GameManager gameManager) {
+    public SnakeMainScreen(Stage primaryStage, String username) {
         this.primaryStage = primaryStage;
         this.username = username;
-        this.gameManager = gameManager;
     }
 
-    public Scene createMainMenuScene() {
+    public void createMainMenuScene() {
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(50));
@@ -49,14 +49,16 @@ public class SnakeMainScreen {
         backButton.setOnAction(e -> backToMainMenu());
 
         root.getChildren().addAll(title, startButton, instructionsButton, backButton);
-        Scene scene = new Scene(root, 800, 600);
+        this.mainMenuScene = new Scene(root, 800, 600);
+    }
 
-        return scene; // Placeholder - Note by Ethan Le: make sure you have a return statement and are returning the Scene object.
+    public Scene getMainMenuScene() {
+        return this.mainMenuScene; // Return the Main Menu Scene of the game.
     }
 
     private void startGame() {
-        SnakeGamePane snakeGamePane = new SnakeGamePane(primaryStage, username, gameManager);
-        primaryStage.setScene(snakeGamePane.getGameScene());
+        SnakeGamePane snakeGamePane = new SnakeGamePane(primaryStage, username);
+        //primaryStage.setScene(snakeGamePane.getGameScene()); // Ethan Le - please fill this in so I can help with the rest of the interface! :)
         primaryStage.show();
 
     }
@@ -83,7 +85,7 @@ public class SnakeMainScreen {
         Button backButton = new Button("BACK TO MENU");
         styleButton(backButton, "#297cb4ff");
         backButton.setOnAction(e ->
-                primaryStage.setScene(createMainMenuScene())
+                primaryStage.setScene(getMainMenuScene())
         );
 
         root.getChildren().addAll(title, instructionsLabel, backButton);
@@ -113,8 +115,7 @@ public class SnakeMainScreen {
         // TODO: Return to Game Manager main menu
         System.out.println("Back to main menu (to be implemented with Game Manager)");
         // For now, just show this menu again
-        primaryStage.setScene(createMainMenuScene());
+        primaryStage.setScene(getMainMenuScene());
     }
 
 }
-*/

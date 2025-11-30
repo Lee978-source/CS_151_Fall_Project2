@@ -3,7 +3,7 @@
  * @version 1.0
  * CS151 Fall 2025 - Project 2
  */
-/*
+
  package gamestate.snakegame;
 import java.util.LinkedList;
 
@@ -41,7 +41,7 @@ public class Snake {
         currentDirection = nextDirection;
         Integer head = getHead();
         Integer newHead = null;
-        switch (currentDirection) {
+        /*switch (currentDirection) {
             case UP:
                 newHead = new Point(head.getX(), head.getY() - 1);
                 break;
@@ -54,7 +54,7 @@ public class Snake {
             case RIGHT:
                 newHead = new Point(head.getX() + 1, head.getY());
                 break;
-        }
+        }*/
         body.addFirst(newHead);
         if (!grow) {
             body.removeLast();
@@ -70,4 +70,3 @@ public class Snake {
 
     
 }
-*/

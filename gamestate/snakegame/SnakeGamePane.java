@@ -3,14 +3,20 @@
  * @version 1.0
  * CS151 Fall 2025 - Project 2
  */
-/*
+
 package gamestate.snakegame;
 
 import gamestate.snakegame.Snake;
+import javafx.stage.Stage;
 
 import javax.swing.*;
 
 public class SnakeGamePane {
+
+    public SnakeGamePane(Stage primaryStage, String username)
+    {
+        // To be filled in
+    }
     public static void main(String[] args) throws Exception {
         int boardWidth = 800;
         int boardHeight = 800;
@@ -23,8 +29,7 @@ public class SnakeGamePane {
         frame.setLocation(null);
 
         Snake snake = new Snake(boardWidth, boardHeight);
-        frame.add(snake);
+        //frame.add(snake);
         frame.pack();
     }
 }
-*/

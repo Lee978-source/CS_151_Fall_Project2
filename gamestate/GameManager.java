@@ -23,6 +23,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.Scene;
 
+import gamestate.snakegame.SnakeMainScreen;
+
 public class GameManager extends Application {
 
 	// Global Instance Variables (Global Scenes for the primaryStage to swap between -- persist across the entire GameManager.java) -- recall OOP:
@@ -410,8 +412,16 @@ public class GameManager extends Application {
     	Button launchSnake = new Button("Play Snake Game"); // Button to launch the Snake game. 
     	Button empty1 = new Button("New Game TBA"); // Empty button for future game. 
     	Button empty2 = new Button("New Game TBA"); // Empty button for future game. 
-    	Button logout = new Button("Logout"); // Button to log out and go back to "Intro" screen. 
-    	
+    	Button logout = new Button("Logout"); // Button to log out and go back to "Intro" screen.
+
+        // Create Main Screen scene instances (BlackJack, Snake):
+        SnakeMainScreen snakeMainSc = new SnakeMainScreen(this.getPrimaryStage(), this.getUsername()); // Create an instance of the SnakeMainScreen class first.
+        snakeMainSc.createMainMenuScene(); // Second, create Main Menu Scene object from the SnakeMainScreen class.
+
+        launchSnake.setOnAction(e -> { // If the user has selected "Play Snake Game" button,
+            this.getPrimaryStage().setScene(snakeMainSc.getMainMenuScene()); // Set the scene to the Main Menu of the Snake game.
+        });
+
     	logout.setOnAction(e -> { // If the user has selected "Logout" button, 
     		this.setUsername(null); // Set current username to null. 
     		this.setPassword(null); // Set current password to null. 
