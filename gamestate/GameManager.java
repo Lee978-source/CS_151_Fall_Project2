@@ -271,8 +271,8 @@ public class GameManager extends Application {
 		
 		loginButton.setOnAction(e -> {
 			
-			String username = this.getLoginUserField().getText(); // Store the entered username into a String variable. 
-			String password = this.getLoginPassField().getText(); // Store the entered password into a String variable. 
+			String username = this.getLoginUserField().getText().strip(); // Store the entered username into a String variable.
+			String password = this.getLoginPassField().getText().strip(); // Store the entered password into a String variable.
 			
 			// Try-catch block to handle potential IOException (file read/write failure):
 			try {
@@ -330,6 +330,16 @@ public class GameManager extends Application {
 
             if (password.length() >= 6)
             {
+                for (String user : this.getUsersList()) // Make sure that no two usernames in the database are the same upon account creation.
+                {
+                    String[] existingUsername = user.split("\t"); // For each existing account in the database, retrieve ONLY the username through the 0th index.
+                    if (existingUsername[0].equals(username)) // Check if the new username matches the 0th index of existingUsername (the index holding an existing USERNAME).
+                    {
+                        guideText.setText("Account with the same username already exists! Choose a different username!"); // Set the guide label to state that a different username must be used to create an account.
+                        return;
+                    }
+                }
+
                 guideText.setText(""); // Clear the guide label (if any) upon successful account creation.
 
                 // Try-catch block to handle potential IOException (file read/write failure):
