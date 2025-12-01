@@ -13,6 +13,8 @@
 package gamestate.snakegame; // Change this to match your package
 
 import gamestate.GameManager;
+
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -29,6 +31,8 @@ public class Snake {
     private static final int GRID_HEIGHT = 20;
     private static final int POINTS_PER_FOOD = 10;
     private final List<Rectangle> snake = new ArrayList<>(); // Global List to hold all of the Snake's parts (individual squares binded together).
+    private int currentSnakeHeadX; // Snake head's horizontal coordinate (grid format).
+    private int currentSnakeHeadY; // Snake head's vertical coordinate (grid format).
     private static final int SNAKE_LENGTH_WIDTH = 30; // Define the length and width of every square of the Snake (length = width to make a square).
 
     //private Snake snake;
@@ -47,9 +51,15 @@ public class Snake {
         this.snake.add(square); // Add the head to the Snake.
     }
 
-    public Rectangle getSnakeHead()
+    public Point getSnakeHeadPos()
     {
-        return this.snake.getFirst(); // Return the first Rectangle of the Snake List (the head of the Snake).
+        Rectangle head = this.snake.getFirst(); // Get the head of the Snake.
+
+        // Get the GRID format of the Snake's head's current coordinates:
+        this.currentSnakeHeadX = (int) ( head.getX() / SNAKE_LENGTH_WIDTH ); // Turn the head's pixel-formatted x-coordinate into GRID format.
+        this.currentSnakeHeadY = (int) ( head.getY() / SNAKE_LENGTH_WIDTH ); // Turn the head's pixel-formatted x-coordinate into GRID format.
+
+        return new Point(this.currentSnakeHeadX, this.currentSnakeHeadY); // Return the current GRID coordinates of the Snake's head as a Coordinate Point.
     }
 
     public void growSnake()
@@ -77,9 +87,9 @@ public class Snake {
     public void update() {
         if (gameOver || paused) return;
 
-        snake.move(); // The actual call of the "move()" method would likely be in the SnakeGamePane class - Ethan Le
+        //snake.move(); // The actual call of the "move()" method would likely be in the SnakeGamePane class - Ethan Le
 
-        if (snake.getHead().equals(food.getPosition())) {
+        if (this.snake.getFirst()..equals(food.getPosition())) {
             snake.grow();
             score += POINTS_PER_FOOD;
             food.spawn(GRID_WIDTH, GRID_HEIGHT, snake);

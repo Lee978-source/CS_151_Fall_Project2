@@ -14,8 +14,8 @@ import java.util.Random;
 public class Food {
 
     private static final Random random = new Random(); // Create Random object to randomly generate numbers.
-    private int x; // Horizontal coordinate (grid format).
-    private int y; // Vertical coordinate (grid format).
+    private int currentFoodX; // Food's horizontal coordinate (grid format).
+    private int currentFoodY; // Food's vertical coordinate (grid format).
 
     // Constructor to make a Food instance.
     public Food()
@@ -31,27 +31,28 @@ public class Food {
         while (successfulSpawn != true) // This loop will continue until we find a valid Food spawn position.
         {
             boolean snakeCollision = false; // Boolean flag to mark if the random Food spawn position hits the Snake (it should be false in order to officially use this new position to spawn the Food sprite).
-            int foodX = random.nextInt(gridWidth); // Generate any number from 0 (inclusive) to the gridWidth (x-axis) boundary (exclusive).
-            int foodY = random.nextInt(gridHeight); // Generate any number from 0 (inclusive) to the gridHeight (y-axis) boundary (exclusive).
+            int newFoodX = random.nextInt(gridWidth); // Generate any number from 0 (inclusive) to the gridWidth (x-axis) boundary (exclusive).
+            int newFoodY = random.nextInt(gridHeight); // Generate any number from 0 (inclusive) to the gridHeight (y-axis) boundary (exclusive).
 
             for (int i = 0; i < snake.size(); i++) // Loop through all current existing body pieces of the Snake and check if any of their positions are colliding with the new Food spawn position.
             {
                 Rectangle bodyPiece = snake.get(i); // Put the next Snake body piece into a variable.
 
+                // Get the GRID format of the Snake's body piece's current coordinates:
                 int bodyPieceXPos = (int) (bodyPiece.getX() / Snake.getSnakeLengthWidth()); // Use division to take the pixel-coordinate of bodyPiece (ex. 500) and divide it by the GRID size of the bodyPiece (30 pixels horizontally and vertically) to get the GRID-COORDINATE of the bodyPiece.
                 int bodyPieceYPos = (int) (bodyPiece.getY() / Snake.getSnakeLengthWidth()); // Use division to take the pixel-coordinate of bodyPiece (ex. 500) and divide it by the GRID size of the bodyPiece (30 pixels horizontally and vertically) to get the GRID-COORDINATE of the bodyPiece.
 
-                if ( (bodyPieceXPos == foodX) && (bodyPieceYPos == foodY) ) // Check if the grid-coordinates of the new Food spawn location are the exact same as any of the Snake's body pieces.
+                if ( (bodyPieceXPos == newFoodX) && (bodyPieceYPos == newFoodY) ) // Check if the grid-coordinates of the new Food spawn location are the exact same as any of the Snake's body pieces.
                 {
                     snakeCollision = true; // If yes, then the food would collide with the Snake (we do NOT want that).
-                    break; // Break out of the for-loop so we can try generating new coordinates for the Food.
+                    break; // Break out of the for-loop so we can try generating new GRID coordinates for the Food.
                 }
             }
 
             if (snakeCollision == false) // If the new coordinates for the Food do NOT collide with the Snake, then make it official by updating this.x and this.y.
             {
-                this.x = foodX; // Use the newly generated x-coordinate (grid format) for the Food.
-                this.y = foodY; // Use the newly generated y-coordinate (grid format) for the Food.
+                this.currentFoodX = newFoodX; // Use the newly generated x-coordinate (grid format) for the Food.
+                this.currentFoodY = newFoodY; // Use the newly generated y-coordinate (grid format) for the Food.
                 successfulSpawn = true; // Set the successfulSpawn flag to true to note that we have found a valid Food spawn position (break out of the while-loop).
             }
         }
@@ -59,7 +60,7 @@ public class Food {
 
     public Point getPosition()
     {
-        return new Point(this.x, this.y); // Return the randomized defined position (grid format) of where the Food sprite should spawn.
+        return new Point(this.currentFoodX, this.currentFoodY); // Return the randomized officially-defined position (grid format) of where the Food sprite should spawn.
     }
 
 }
