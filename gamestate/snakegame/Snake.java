@@ -66,7 +66,20 @@ public class Snake {
 
     public void move()
     {
-        this.currentDirection = this.newDirection; //
+        this.currentDirection = this.newDirection; // Change the direction of the Snake if the user has pressed a key.
+
+        Point snakeHead = this.getSnakeHeadPos(); // Get the head of the Snake (it is the first piece that would change directions).
+
+        switch (this.currentDirection)
+        {
+            case LEFT:
+                snakeHead.x -= 1; // If
+                break;
+            case RIGHT:
+                snakeHead.x += 1;
+
+        }
+
     }
 
     private void initGame() {
