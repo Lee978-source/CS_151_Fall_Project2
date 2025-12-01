@@ -81,8 +81,8 @@ public class Snake {
             this.food.randomSpawn(GRID_WIDTH, GRID_HEIGHT, snake); // A new Food sprite's GRID positions are randomized and ready for spawning on the grid.
         }
 
-        if (snake.collidesWithWall(GRID_WIDTH, GRID_HEIGHT) ||
-                snake.collidesWithSelf()) {
+        if (this.collidesWithWall(GRID_WIDTH, GRID_HEIGHT) ||
+                this.collidesWithSelf()) {
             gameOver = true;
             saveHighScore();
         }
