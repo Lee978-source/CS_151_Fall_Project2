@@ -26,6 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import java.awt.Point;
 
 public class SnakeGamePane {
 
@@ -226,5 +227,10 @@ public class SnakeGamePane {
         }
         primaryStage.setScene(gameManager.getMainScreen());
         //primaryStage.setTitle("Welcome, " + username + "! What game would you like to play today?");
+    }
+
+    public static int getCellSize()
+    {
+        return cellSize;
     }
 }

@@ -158,5 +158,6 @@ public class Snake {
     public boolean isPaused() { return paused; }
     public int getGridWidth() { return GRID_WIDTH; }
     public int getGridHeight() { return GRID_HEIGHT; }
+    public static int getSnakeLengthWidth() { return SNAKE_LENGTH_WIDTH; }
     public String getUsername() { return username; }
 }
