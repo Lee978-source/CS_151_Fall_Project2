@@ -5,11 +5,9 @@
  */
 package gamestate.snakegame;
 
-import javafx.scene.shape.Rectangle;
 import java.awt.Point;
 import java.util.List;
 import java.util.Random;
-
 
 public class Food {
 
@@ -24,23 +22,23 @@ public class Food {
     }
 
     // Method to randomize spawn position of the Food sprite:
-    public void randomSpawn(int gridWidth, int gridHeight, List<Rectangle> snake) // Parameters take the TOTAL number of GRIDS in the gameboard horizontally and vertically, and the Snake sprite itself.
+    public void randomSpawn(int gridWidth, int gridHeight, List<Point> snake) // Parameters take the TOTAL number of GRIDS in the gameboard horizontally and vertically, and the Snake segments themselves (as a List of position Points).
     {
         boolean successfulSpawn = false; // Boolean flag to mark whether or not the Food spawn is successful.
 
         while (successfulSpawn != true) // This loop will continue until we find a valid Food spawn position.
         {
             boolean snakeCollision = false; // Boolean flag to mark if the random Food spawn position hits the Snake (it should be false in order to officially use this new position to spawn the Food sprite).
-            int newFoodX = random.nextInt(gridWidth); // Generate any number from 0 (inclusive) to the gridWidth (x-axis) boundary (exclusive).
-            int newFoodY = random.nextInt(gridHeight); // Generate any number from 0 (inclusive) to the gridHeight (y-axis) boundary (exclusive).
+            int newFoodX = random.nextInt(gridWidth); // Use the gameboard's TOTAL number of grids along the HORIZONTAL axis to generate any number from 0 (inclusive) to the gridWidth (x-axis) boundary (exclusive).
+            int newFoodY = random.nextInt(gridHeight); // Use the gameboard's TOTAL number of grids along the VERTICAL axis to generate any number from 0 (inclusive) to the gridHeight (y-axis) boundary (exclusive).
 
             for (int i = 0; i < snake.size(); i++) // Loop through all current existing body pieces of the Snake and check if any of their positions are colliding with the new Food spawn position.
             {
-                Rectangle bodyPiece = snake.get(i); // Put the next Snake body piece into a variable.
+                Point bodyPiece = snake.get(i); // Put the next Snake body piece (the body piece's current position Point) into a variable.
 
                 // Get the GRID format of the Snake's body piece's current coordinates:
-                int bodyPieceXPos = (int) (bodyPiece.getX() / Snake.getSnakeLengthWidth()); // Use division to take the pixel-coordinate of bodyPiece (ex. 500) and divide it by the GRID size of the bodyPiece (30 pixels horizontally and vertically) to get the GRID-COORDINATE of the bodyPiece.
-                int bodyPieceYPos = (int) (bodyPiece.getY() / Snake.getSnakeLengthWidth()); // Use division to take the pixel-coordinate of bodyPiece (ex. 500) and divide it by the GRID size of the bodyPiece (30 pixels horizontally and vertically) to get the GRID-COORDINATE of the bodyPiece.
+                int bodyPieceXPos = bodyPiece.x; // Get the GRID x-COORDINATE of the bodyPiece.
+                int bodyPieceYPos = bodyPiece.y; // Get the GRID y-COORDINATE of the bodyPiece.
 
                 if ( (bodyPieceXPos == newFoodX) && (bodyPieceYPos == newFoodY) ) // Check if the grid-coordinates of the new Food spawn location are the exact same as any of the Snake's body pieces.
                 {

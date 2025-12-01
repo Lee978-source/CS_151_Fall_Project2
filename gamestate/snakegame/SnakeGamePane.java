@@ -57,14 +57,13 @@ public class SnakeGamePane {
     public Scene createGameScene() {
         BorderPane root = new BorderPane();
 
-        root.getChildren().add(this.game.getSnakeHead()); // Add the Snake's Head to the game frame.
         root.setStyle("-fx-background-color: #1e272eff;");
 
         canvas = new Canvas(600, 500);
         int gridWidth = (int) (this.canvas.getWidth() / cellSize); // Convert the pixels of the canvas into grid-coordinates (ex: 600 / 25 = 24 grids horizontally).
         int gridHeight = (int) (this.canvas.getHeight() / cellSize); // Convert the pixels of the canvas into grid-coordinates (ex: 500 / 25 = 20 grids vertically).
 
-        food.randomSpawn(gridWidth, gridHeight, this.game.getSnake()); // Call the Food's randomSpawn method (sending the gameboard's total size and the Snake sprite) to determine where the Food sprite should spawn.
+        food.randomSpawn(gridWidth, gridHeight, this.game.getSnakeSegments()); // Call the Food's randomSpawn method (sending the gameboard's total size and the Snake's segments' position Points) to determine where the Food sprite should spawn.
 
         gc = canvas.getGraphicsContext2D();
         root.setCenter(canvas);
@@ -135,7 +134,7 @@ public class SnakeGamePane {
 
         // Draw Snake
         gc.setFill(Color.web("#27ae60ff"));
-        for (Point p : game.getSnake().getBody()) {
+        for (Point p : game.getSnakeSegments()) {
             gc.fillRect(p.getX() * cellSize, p.getY() * cellSize, cellSize, cellSize);
         }
 

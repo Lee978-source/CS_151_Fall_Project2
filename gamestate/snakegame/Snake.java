@@ -27,13 +27,10 @@ import javafx.scene.shape.Rectangle;
 
 
 public class Snake {
-    private static final int GRID_WIDTH = 30;
+    private static final int GRID_WIDTH = 24;
     private static final int GRID_HEIGHT = 20;
     private static final int POINTS_PER_FOOD = 10;
-    private final List<Rectangle> snake = new ArrayList<>(); // Global List to hold all of the Snake's parts (individual squares binded together).
-    private int currentSnakeHeadX; // Snake head's horizontal coordinate (grid format).
-    private int currentSnakeHeadY; // Snake head's vertical coordinate (grid format).
-    private static final int SNAKE_LENGTH_WIDTH = 30; // Define the length and width of every square of the Snake (length = width to make a square).
+    private final List<Point> snake = new ArrayList<>(); // Global List to hold all of the Snake's parts (each segment defined by their Positions).
 
     //private Snake snake;
     private Food food;
@@ -45,36 +42,16 @@ public class Snake {
 
     public Snake()
     {
-        Rectangle square = new Rectangle(SNAKE_LENGTH_WIDTH, SNAKE_LENGTH_WIDTH); // Create the head for the Snake.
-        square.setFill(Color.GREEN); // Set the color of the Snake head (different from other Snake pieces).
-
-        this.snake.add(square); // Add the head to the Snake.
-    }
-
-    // Getter method to retrieve the actual Snake's head piece:
-    public Rectangle getSnakeHead()
-    {
-        return this.snake.getFirst(); // Return the Snake's head (first Rectangle of the List). 
-    }
-
-    // Getter method to retrieve the current GRID coordinate point of the Snake's head:
-    public Point getSnakeHeadPos()
-    {
-        Rectangle head = this.snake.getFirst(); // Get the head of the Snake.
-
-        // Get the GRID format of the Snake's head's current coordinates:
-        this.currentSnakeHeadX = (int) ( head.getX() / SNAKE_LENGTH_WIDTH ); // Turn the head's pixel-formatted x-coordinate into GRID format.
-        this.currentSnakeHeadY = (int) ( head.getY() / SNAKE_LENGTH_WIDTH ); // Turn the head's pixel-formatted x-coordinate into GRID format.
-
-        return new Point(this.currentSnakeHeadX, this.currentSnakeHeadY); // Return the current GRID coordinates of the Snake's head as a Coordinate Point.
+        this.snake.add(new Point(5, 5)); // Add the head (with a GRID position of x=5 and y=5) to the Snake.
     }
 
     public void growSnake()
     {
-        Rectangle square = new Rectangle(SNAKE_LENGTH_WIDTH, SNAKE_LENGTH_WIDTH); // Create a new piece to add to the Snake.
-        square.setFill(Color.AQUA); // Set the color of the new Snake component.
+        Point tail = this.snake.getLast(); // Get the tail position Point of the Snake.
 
-        this.snake.add(square); // Add the square (make the Snake longer).
+        Point newPiece = new Point(tail.x, tail.y); // Create a copy of the tail position Point.
+
+        this.snake.add(newPiece); // Add the new piece to the end of the Snake.
     }
 
     public void move(Scene snakeGamePane)
@@ -99,7 +76,7 @@ public class Snake {
         // If the Snake's head reaches the same GRID position as the spawned Food sprite, make the Snake grow.
         if (this.getSnakeHeadPos().getX() == (this.food.getPosition().getX()) && this.getSnakeHeadPos().getY() == (this.food.getPosition().getY()))
         {
-            snake.grow();
+            this.growSnake(); // Grow the Snake if the Snake's head has touched the Food sprite.
             score += POINTS_PER_FOOD;
             this.food.randomSpawn(GRID_WIDTH, GRID_HEIGHT, snake); // A new Food sprite's GRID positions are randomized and ready for spawning on the grid.
         }
@@ -109,6 +86,31 @@ public class Snake {
             gameOver = true;
             saveHighScore();
         }
+    }
+
+    // Method to determine if the Snake has hit any of the boundaries of the gameboard:
+    public boolean collidesWithWall(int gridWidth, int gridHeight)
+    {
+        Point snakeHead = this.getSnakeHeadPos(); // Get the head of the Snake (it is the first piece that would touch the gameboard boundaries).
+
+        if ( (snakeHead.x < 0) || (snakeHead.y < 0) || (snakeHead.x >= gridWidth) || (snakeHead.y >= gridHeight) )
+        {
+            return true; // Return "true" if the snake's head position is outside of the defined gameboard.
+        }
+
+        return false; // Otherwise, return "false" if the snake's head position is still within the defined gameboard.
+    }
+
+    // Method to determine if the Snake has hit itself:
+    public boolean collidesWithSelf()
+    {
+        for (int i = 1; i < this.getSnakeSegments().size(); i++)
+        {
+            if (this.getSnakeHeadPos().equals(this.getSnakeSegments().get(i)))
+                return true; // Return "true" if the snake's head position is equal to the position of one of its segments (meaning collision with itself).
+        }
+
+        return false; // Otherwise, return "false" if the snake's head position has not hit any of its segments.
     }
 
     public void handleKeyPress(String key) {
@@ -169,14 +171,24 @@ public class Snake {
         }
     }
 
-    // Getters
-    public List<Rectangle> getSnake() { return this.snake; } // Return the ArrayList containing all of the current pieces of the Snake.
+    // Getters:
+    // Getter method to retrieve ALL of the Snake's segments (via a List of Points):
+    public List<Point> getSnakeSegments()
+    {
+        return this.snake; // Return the entire Snake (List of position Points).
+    }
+
+    // Getter method to retrieve the current GRID coordinate point of the Snake's head:
+    public Point getSnakeHeadPos()
+    {
+        return this.snake.getFirst(); // Return the current GRID coordinates of the Snake's head as a Coordinate Point (get the 0th index containing the position of the Snake's head).
+    }
+
     public Food getFood() { return food; }
     public int getScore() { return score; }
     public boolean isGameOver() { return gameOver; }
     public boolean isPaused() { return paused; }
     public int getGridWidth() { return GRID_WIDTH; }
     public int getGridHeight() { return GRID_HEIGHT; }
-    public static int getSnakeLengthWidth() { return SNAKE_LENGTH_WIDTH; }
     public String getUsername() { return username; }
 }
