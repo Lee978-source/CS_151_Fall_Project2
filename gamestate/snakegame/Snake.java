@@ -31,6 +31,8 @@ public class Snake {
     private static final int GRID_HEIGHT = 20;
     private static final int POINTS_PER_FOOD = 10;
     private final List<Point> snake = new ArrayList<>(); // Global List to hold all of the Snake's parts (each segment defined by their Positions).
+    private Direction currentDirection = Direction.LEFT; // Set the initial starting direction of the Snake.
+    private Direction newDirection = Direction.LEFT; // Set the new direction of the Snake.
 
     //private Snake snake;
     private Food food;
@@ -39,6 +41,14 @@ public class Snake {
     private boolean paused;
     private String username;
     private GameManager gameManager; // Reference to GameManager
+
+    public enum Direction // Define constants for the Direction of the Snake's movement.
+    {
+        LEFT,
+        RIGHT,
+        DOWN,
+        UP
+    }
 
     public Snake()
     {
@@ -54,9 +64,9 @@ public class Snake {
         this.snake.add(newPiece); // Add the new piece to the end of the Snake.
     }
 
-    public void move(Scene snakeGamePane)
+    public void move()
     {
-        // To be filled in - Ethan Le
+        this.currentDirection = this.newDirection; //
     }
 
     private void initGame() {
@@ -71,7 +81,7 @@ public class Snake {
     public void update() {
         if (gameOver || paused) return;
 
-        //snake.move(); // The actual call of the "move()" method would likely be in the SnakeGamePane class - Ethan Le
+        this.move(); // Move the Snake.
 
         // If the Snake's head reaches the same GRID position as the spawned Food sprite, make the Snake grow.
         if (this.getSnakeHeadPos().getX() == (this.food.getPosition().getX()) && this.getSnakeHeadPos().getY() == (this.food.getPosition().getY()))
@@ -111,6 +121,19 @@ public class Snake {
         }
 
         return false; // Otherwise, return "false" if the snake's head position has not hit any of its segments.
+    }
+
+    // Method to change the direction of the Snake (depending on user key press):
+    public void setNextDirection(Direction newDirection)
+    {
+        // Use if-else statement to ensure the Snake does not turn 180 degrees (can only make 90-degree turns):
+        if ( !((newDirection == Direction.LEFT && this.currentDirection == Direction.RIGHT)
+            || (newDirection == Direction.UP && this.currentDirection == Direction.DOWN)
+            || (newDirection == Direction.RIGHT && this.currentDirection == Direction.LEFT)
+            || (newDirection == Direction.DOWN && this.currentDirection == Direction.UP)) )
+        {
+            this.newDirection = newDirection; // If the pressed key does NOT turn the Snake 180 degrees, set the pressed key as the new direction.
+        }
     }
 
     public void handleKeyPress(String key) {
