@@ -20,7 +20,7 @@ private static final int Grid_Width = 30;
     private Food food;
     private int score;
     private boolean gameOver;
-    private bolean paused;
+    private boolean paused;
     private String username;
 
     public SnakeGame(String username, GameManager gameManager) {
