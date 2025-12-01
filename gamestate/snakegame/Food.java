@@ -73,14 +73,14 @@ public class Food {
         return new Point(this.x, this.y); // Return the randomized defined position (grid format) of where the Food sprite should spawn.
     }
 
-    // Method to put the Food sprite in the CENTER of its GRID SPACE:
+    // Helper method to put the Food sprite in the CENTER of its GRID SPACE:
     private void setCenterFood()
     {
         int leftOfCell = this.x * SnakeGamePane.getCellSize(); // Convert the grid-coordinate to pixel-format.
         int topOfCell = this.y * SnakeGamePane.getCellSize(); // Convert the grid-coordinate to pixel-format.
 
         // Place the Food sprite at the CENTER of the cell it is in:
-        food.setCenterX(leftOfCell / 2.0); // Center the pixel x-coordinate.
-        food.setCenterY(topOfCell / 2.0); // Center the pixel y-coordinate.
+        food.setCenterX(leftOfCell + (SnakeGamePane.getCellSize() / 2.0)); // Center the pixel x-coordinate (shift the x-coordinate to the right to the HALFWAY point of the cell).
+        food.setCenterY(topOfCell + (SnakeGamePane.getCellSize() / 2.0)); // Center the pixel y-coordinate (shift the y-coordinate down to the HALFWAY point of the cell).
     }
 }
