@@ -51,6 +51,12 @@ public class Snake {
         this.snake.add(square); // Add the head to the Snake.
     }
 
+    // Getter method to retrieve the actual Snake's head piece:
+    public Rectangle getSnakeHead()
+    {
+        return this.snake.getFirst(); // Return the Snake's head (first Rectangle of the List). 
+    }
+
     // Getter method to retrieve the current GRID coordinate point of the Snake's head:
     public Point getSnakeHeadPos()
     {
@@ -78,8 +84,8 @@ public class Snake {
 
     private void initGame() {
         //snake = new Snake();
-        food = new Food();
-        food.spawn(GRID_WIDTH, GRID_HEIGHT, snake);
+        this.food = new Food();
+        this.food.randomSpawn(GRID_WIDTH, GRID_HEIGHT, snake);
         score = 0;
         gameOver = false;
         paused = false;
@@ -91,11 +97,11 @@ public class Snake {
         //snake.move(); // The actual call of the "move()" method would likely be in the SnakeGamePane class - Ethan Le
 
         // If the Snake's head reaches the same GRID position as the spawned Food sprite, make the Snake grow.
-        if (this.getSnakeHeadPos().getX() == (food.getPosition().getX()) && this.getSnakeHeadPos().getY() == (food.getPosition().getY()))
+        if (this.getSnakeHeadPos().getX() == (this.food.getPosition().getX()) && this.getSnakeHeadPos().getY() == (this.food.getPosition().getY()))
         {
             snake.grow();
             score += POINTS_PER_FOOD;
-            food.randomSpawn(GRID_WIDTH, GRID_HEIGHT, snake); // A new Food sprite's GRID positions are randomized and ready for spawning on the grid.
+            this.food.randomSpawn(GRID_WIDTH, GRID_HEIGHT, snake); // A new Food sprite's GRID positions are randomized and ready for spawning on the grid.
         }
 
         if (snake.collidesWithWall(GRID_WIDTH, GRID_HEIGHT) ||
