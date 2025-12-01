@@ -38,9 +38,6 @@ public class BlackJackMainScreen {
         this.username = username;
     }
 
-    /**
-     * Create the Blackjack main menu scene with New Game and Load Game options
-     */
     public void createMainMenuScene() {
         Label titleLabel = new Label("BLACKJACK");
         titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 36));
@@ -85,10 +82,37 @@ public class BlackJackMainScreen {
         //Controls
     }
 
+    private VBox createPlayerDisplay(String playerName, boolean isDealer) {
+        Label nameLabel = new Label(playerName);
+        nameLabel.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+
+        Label handLabel = new Label("Hand: --");
+        handLabel.setFont(Font.font("Arial", 14));
+        
+        VBox cardDisplay = new VBox(5);
+        cardDisplay.setAlignment(Pos.CENTER);
+        cardDisplay.setMinHeight(100);
+        
+        if (isDealer) {
+            VBox box = new VBox(10, nameLabel, handLabel, cardDisplay);
+            box.setAlignment(Pos.CENTER);
+            box.setStyle("-fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;");
+            return box;
+        } else {
+            Label balanceLabel = new Label("Balance: $1000");
+            balanceLabel.setFont(Font.font("Arial", 14));
+            
+            VBox box = new VBox(10, nameLabel, handLabel, balanceLabel, cardDisplay);
+            box.setAlignment(Pos.CENTER);
+            box.setStyle("-fx-border-color: black; -fx-border-width: 2; -fx-padding: 10;");
+            return box;
+        }
+    }
+
     private void returnToMainMenu(){
         primaryStage.setScene(mainMenuScene);
     }
-    // Getters
+
     public Scene getMainMenuScene() {
         return this.mainMenuScene;
     }
