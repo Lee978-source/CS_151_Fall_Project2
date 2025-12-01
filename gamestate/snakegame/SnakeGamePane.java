@@ -37,6 +37,7 @@ public class SnakeGamePane {
     private String username;
     private GameManager gameManager;
     private Snake game;
+    private Food food;
     private Canvas canvas;
     private GraphicsContext gc;
     private AnimationTimer gameLoop;
@@ -50,14 +51,21 @@ public class SnakeGamePane {
         this.username = username;
         this.gameManager = gameManager;
         this.game = new Snake();
+        this.food = new Food(); // Instantiate a new Food object (allows us to access methods to create and spawn the Food sprite).
     }
 
     public Scene createGameScene() {
         BorderPane root = new BorderPane();
+
         root.getChildren().add(this.game.getSnakeHead()); // Add the Snake's Head to the game frame.
         root.setStyle("-fx-background-color: #1e272eff;");
 
         canvas = new Canvas(600, 500);
+        int gridWidth = (int) (this.canvas.getWidth() / cellSize); // Convert the pixels of the canvas into grid-coordinates (ex: 600 / 25 = 24 grids horizontally).
+        int gridHeight = (int) (this.canvas.getHeight() / cellSize); // Convert the pixels of the canvas into grid-coordinates (ex: 500 / 25 = 20 grids vertically).
+
+        food.randomSpawn(gridWidth, gridHeight, this.game.getSnake()); // Call the Food's randomSpawn method (sending the gameboard's total size and the Snake sprite) to determine where the Food sprite should spawn.
+
         gc = canvas.getGraphicsContext2D();
         root.setCenter(canvas);
 
@@ -133,8 +141,8 @@ public class SnakeGamePane {
 
         // Draw Food
         gc.setFill(Color.web("#e74c3cff"));
-        Point foodPos = game.getFood().getPosition();
-        gc.fillOval(foodPos.getX() * cellSize, foodPos.getY() * cellSize, cellSize, cellSize);
+        Point foodPos = game.getFood().getPosition(); // Get the position of the Food sprite.
+        gc.fillOval(foodPos.getX() * cellSize, foodPos.getY() * cellSize, cellSize, cellSize); // Render the Food sprite as an oval.
     }
 
     private void updateScore() {

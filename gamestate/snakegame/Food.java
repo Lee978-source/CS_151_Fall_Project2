@@ -5,9 +5,6 @@
  */
 package gamestate.snakegame;
 
-import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import java.awt.Point;
 import java.util.List;
@@ -16,25 +13,18 @@ import java.util.Random;
 
 public class Food {
 
-    private final Circle food; // Variable for the Food sprite to be displayed on SnakeGamePane.java.
-    private static final int FOOD_RADIUS = 10; // Define the radius of the Food sprite.
     private static final Random random = new Random(); // Create Random object to randomly generate numbers.
-    private int x; // Horizontal axis.
-    private int y; // Vertical axis.
+    private int x; // Horizontal coordinate (grid format).
+    private int y; // Vertical coordinate (grid format).
 
     // Constructor to make a Food instance.
     public Food()
     {
-        this.food = new Circle(FOOD_RADIUS, Color.RED); // Create a new Food sprite with the specified radius and color.
-    }
-
-    public Circle getFood()
-    {
-        return this.food; // Return the Food sprite (to be displayed in SnakeGamePane.java).
+        // Empty - constructor allows other files to create Food instance to access method to determine Food sprite's spawn position.
     }
 
     // Method to randomize spawn position of the Food sprite:
-    public void randomSpawn(int gridWidth, int gridHeight, List<Rectangle> snake)
+    public void randomSpawn(int gridWidth, int gridHeight, List<Rectangle> snake) // Parameters take the TOTAL number of GRIDS in the gameboard horizontally and vertically, and the Snake sprite itself.
     {
         boolean successfulSpawn = false; // Boolean flag to mark whether or not the Food spawn is successful.
 
@@ -62,7 +52,6 @@ public class Food {
             {
                 this.x = foodX; // Use the newly generated x-coordinate (grid format) for the Food.
                 this.y = foodY; // Use the newly generated y-coordinate (grid format) for the Food.
-                setCenterFood(); // Call helper method to center the Food sprite on its respective grid space.
                 successfulSpawn = true; // Set the successfulSpawn flag to true to note that we have found a valid Food spawn position (break out of the while-loop).
             }
         }
@@ -73,14 +62,4 @@ public class Food {
         return new Point(this.x, this.y); // Return the randomized defined position (grid format) of where the Food sprite should spawn.
     }
 
-    // Helper method to put the Food sprite in the CENTER of its GRID SPACE:
-    private void setCenterFood()
-    {
-        int leftOfCell = this.x * SnakeGamePane.getCellSize(); // Convert the grid-coordinate to pixel-format.
-        int topOfCell = this.y * SnakeGamePane.getCellSize(); // Convert the grid-coordinate to pixel-format.
-
-        // Place the Food sprite at the CENTER of the cell it is in:
-        food.setCenterX(leftOfCell + (SnakeGamePane.getCellSize() / 2.0)); // Center the pixel x-coordinate (shift the x-coordinate to the right to the HALFWAY point of the cell).
-        food.setCenterY(topOfCell + (SnakeGamePane.getCellSize() / 2.0)); // Center the pixel y-coordinate (shift the y-coordinate down to the HALFWAY point of the cell).
-    }
 }
