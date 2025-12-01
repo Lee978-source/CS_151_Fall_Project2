@@ -51,6 +51,7 @@ public class Snake {
         this.snake.add(square); // Add the head to the Snake.
     }
 
+    // Getter method to retrieve the current GRID coordinate point of the Snake's head:
     public Point getSnakeHeadPos()
     {
         Rectangle head = this.snake.getFirst(); // Get the head of the Snake.
@@ -89,10 +90,12 @@ public class Snake {
 
         //snake.move(); // The actual call of the "move()" method would likely be in the SnakeGamePane class - Ethan Le
 
-        if (this.snake.getFirst()..equals(food.getPosition())) {
+        // If the Snake's head reaches the same GRID position as the spawned Food sprite, make the Snake grow.
+        if (this.getSnakeHeadPos().getX() == (food.getPosition().getX()) && this.getSnakeHeadPos().getY() == (food.getPosition().getY()))
+        {
             snake.grow();
             score += POINTS_PER_FOOD;
-            food.spawn(GRID_WIDTH, GRID_HEIGHT, snake);
+            food.randomSpawn(GRID_WIDTH, GRID_HEIGHT, snake); // A new Food sprite's GRID positions are randomized and ready for spawning on the grid.
         }
 
         if (snake.collidesWithWall(GRID_WIDTH, GRID_HEIGHT) ||
