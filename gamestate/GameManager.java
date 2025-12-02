@@ -175,6 +175,8 @@ public class GameManager extends Application {
     public void setUsername(String username)
     {
     	this.username = username; // Assign the sent username as the global username.
+        // This sets the username for BlackJack
+        setMainScreen(); //go to main menu
     }
 
     public void setPassword(String password)
@@ -248,9 +250,12 @@ public class GameManager extends Application {
     	Button createButton = new Button("Create Account"); // "Create Account" button for player to create a new account.
 
     	loginButton.setOnAction(e -> { // If the player has clicked the "Log In" button,
-    		this.getPrimaryStage().setScene(this.getLoginScreen()); // then set the primaryStage to the "Login" screen.
+            //This gives the turns null username to current username in BJ
+            String enteredUsername = loginUsernameField.getText();
+            this.getPrimaryStage().setScene(this.getLoginScreen()); // then set the primaryStage to the "Login" screen.
     		this.getPrimaryStage().setTitle("Log in to your account"); // Title of the Stage (on "Login" page).
-    	});
+            setUsername(enteredUsername);
+        });
 
     	createButton.setOnAction(e -> { // If the player has clicked the "Create Account" button,
     		this.getPrimaryStage().setScene(this.getCreateAccScreen()); // then set the primaryStage to the "Create Account" screen.

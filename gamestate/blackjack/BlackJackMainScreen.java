@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 
 public class BlackJackMainScreen {
 
+
     private Stage primaryStage;
     private String username;
     private Scene mainMenuScene;
@@ -56,8 +57,10 @@ public class BlackJackMainScreen {
         VBox layout = new VBox(20, titleLabel, newGameButton, backButton);
         layout.setAlignment(Pos.CENTER);
 
+
         this.mainMenuScene = new Scene(layout, 800, 600);
     }
+
 /*
     private void startNewGame() {
         this.engine = new BlackJackEngine(1000);
