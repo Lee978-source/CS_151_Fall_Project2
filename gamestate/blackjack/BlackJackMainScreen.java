@@ -28,9 +28,8 @@ public class BlackJackMainScreen {
     private Scene mainMenuScene;
     private Scene gameScene;
     private BlackJackEngine engine;
-
+    private Button backButton; // new
     // User interface for game screen
-
 
 
     public BlackJackMainScreen(Stage primaryStage, String username) {
@@ -46,9 +45,9 @@ public class BlackJackMainScreen {
         newGameButton.setPrefWidth(200);
         newGameButton.setOnAction(e -> startNewGame());
 
-        Button backButton = new Button("Back to Main Menu");
+        this.backButton = new Button("Back to Main Menu");
         backButton.setPrefWidth(200);
-        backButton.setOnAction(e -> returnToMainMenu());
+        // backButton.setOnAction(e -> returnToMainMenu()); remove
 
         VBox layout = new VBox(20, titleLabel, newGameButton, backButton);
         layout.setAlignment(Pos.CENTER);
@@ -109,8 +108,8 @@ public class BlackJackMainScreen {
         }
     }
 
-    private void returnToMainMenu(){
-        primaryStage.setScene(mainMenuScene);
+    public Button getBackToMainMenu() { // new
+        return this.backButton;
     }
 
     public Scene getMainMenuScene() {
