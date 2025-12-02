@@ -43,6 +43,11 @@ public class SnakeGamePane {
     private AnimationTimer gameLoop;
     private long lastUpdate = 0;
     private Label scoreLabel;
+    private Label pausedLabel;
+
+    private boolean paused;
+    private int score;
+    private boolean gameOver;
 
     public SnakeGamePane(Stage primaryStage, String username, GameManager gameManager)
     {
@@ -168,6 +173,18 @@ public class SnakeGamePane {
             default:
                 break;
         }
+    }
+
+    private void togglePause() {
+        paused = !paused;
+        pausedLabel.setVisible(paused);
+    }
+
+    private void saveHighScore(){
+        try {
+            String scoreEntry = username + " Snake " + score;
+            List<String> allScores = File
+         }
     }
 
     private void showGameOver() {
