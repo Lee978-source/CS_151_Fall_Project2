@@ -68,18 +68,27 @@ public class Snake {
     {
         this.currentDirection = this.newDirection; // Change the direction of the Snake if the user has pressed a key.
 
-        Point snakeHead = this.getSnakeHeadPos(); // Get the head of the Snake (it is the first piece that would change directions).
+        Point snakeHeadOld = this.getSnakeHeadPos(); // Get the CURRENT position of the head of the Snake (it is the first piece that would change directions).
+        Point snakeHeadNew = new Point(snakeHeadOld.x, snakeHeadOld.y); // Create a NEW position for where the Snake's head will end up next (next animation frame of the game).
 
-        switch (this.currentDirection)
+        switch (this.currentDirection) // Repeats over and over as long as the game is running.
         {
             case LEFT:
-                snakeHead.x -= 1; // If
+                snakeHeadNew.x -= 1; // If the current direction of the Snake is now left, set the Snake's head to go 1 GRID cell to the left.
                 break;
             case RIGHT:
-                snakeHead.x += 1;
-
+                snakeHeadNew.x += 1; // If the current direction of the Snake is now right, set the Snake's head to go 1 GRID cell to the right.
+                break;
+            case DOWN:
+                snakeHeadNew.y += 1; // If the current direction of the Snake is now down, set the Snake's head to go 1 GRID cell down (positive y-direction).
+                break;
+            case UP:
+                snakeHeadNew.y -= 1; // If the current direction of the Snake is now up, set the Snake's head to go 1 GRID cell up (negative y-direction).
+                break;
         }
 
+        this.getSnakeSegments().addFirst(snakeHeadNew); // Shift all other snake segments in the list down the list, and add the head with the NEW position in front.
+        this.getSnakeSegments().removeLast(); // Get rid of the CURRENT tail segment, otherwise Snake will keep extending in the current direction forever (the last segment must always be removed in every animation frame since there is a NEW head segment being added to the front in every animation frame).
     }
 
     private void initGame() {
