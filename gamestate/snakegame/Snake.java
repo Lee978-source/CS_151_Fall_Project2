@@ -65,8 +65,7 @@ public class Snake {
         this.snake.add(newPiece); // Add the new piece to the end of the Snake.
     }
 
-    public void move()
-    {
+    public void move(boolean grow) {
         this.currentDirection = this.newDirection; // Change the direction of the Snake if the user has pressed a key.
 
         Point snakeHeadOld = this.getSnakeHeadPos(); // Get the CURRENT position of the head of the Snake (it is the first piece that would change directions).
@@ -87,9 +86,11 @@ public class Snake {
                 snakeHeadNew.y -= 1; // If the current direction of the Snake is now up, set the Snake's head to go 1 GRID cell up (negative y-direction).
                 break;
         }
-
         this.getSnakeSegments().addFirst(snakeHeadNew); // Shift all other snake segments in the list down the list, and add the head with the NEW position in front.
-        this.getSnakeSegments().removeLast(); // Get rid of the CURRENT tail segment, otherwise Snake will keep extending in the current direction forever (the last segment must always be removed in every animation frame since there is a NEW head segment being added to the front in every animation frame).
+
+        if (!grow) {
+            this.getSnakeSegments().removeLast(); // Get rid of the CURRENT tail segment, otherwise Snake will keep extending in the current direction forever (the last segment must always be removed in every animation frame since there is a NEW head segment being added to the front in every animation frame).
+        }
     }
 
     private void initGame() {
@@ -104,7 +105,7 @@ public class Snake {
     public void update() {
         if (gameOver || paused) return;
 
-        this.move(); // Move the Snake.
+        this.move(paused); // Move the Snake.
 
         // If the Snake's head reaches the same GRID position as the spawned Food sprite, make the Snake grow.
         if (this.getSnakeHeadPos().getX() == (this.food.getPosition().getX()) && this.getSnakeHeadPos().getY() == (this.food.getPosition().getY()))
@@ -188,7 +189,7 @@ public class Snake {
     }
 
     // Save high score in GameManager format: username,SNAKE,score
-    private void saveHighScore() {
+    public void saveHighScore() {
         try {
             // Format: username,SNAKE,score
             String scoreEntry = username + ",SNAKE," + score;

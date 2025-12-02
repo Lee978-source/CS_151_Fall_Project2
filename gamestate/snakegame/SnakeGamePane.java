@@ -124,9 +124,27 @@ public class SnakeGamePane {
             public void handle(long now) {
                 if (now - lastUpdate >= gameSpeed) {
                     if (!game.isPaused() && !game.isGameOver()) {
-                        game.update();
+                        int gridWidth = (int) (canvas.getWidth() / cellSize);
+                        int gridHeight = (int) (canvas.getHeight() / cellSize);
+
+                        Point foodPos = food.getPosition();
+                        Point head = game.getSnakeHeadPos();
+                        boolean foodAte= (head.x == foodPos.x &&head.y == foodPos.y);
+                        game.move(foodAte);
+
+                        if(foodAte) {
+                            score = score + 10;
+                             scoreLabel.setText(("Your score: " + score));
+                            food.randomSpawn(gridWidth,gridHeight,game.getSnakeSegments());
+                        }
+                        if(game.collidesWithWall(gridWidth,gridHeight) || game.collidesWithSelf()) {
+                            gameOver = true;
+                            game.saveHighScore();
+                            showGameOver();
+                            return;
+                        }
+                       // game.update();
                         render();
-                        scoreLabel.setText("Score: " + game.getScore());
                     }
                     lastUpdate = now;
                 }
