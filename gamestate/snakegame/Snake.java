@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
@@ -30,7 +31,7 @@ public class Snake {
     private static final int GRID_WIDTH = 24;
     private static final int GRID_HEIGHT = 20;
     private static final int POINTS_PER_FOOD = 10;
-    private final List<Point> snake = new ArrayList<>(); // Global List to hold all of the Snake's parts (each segment defined by their Positions).
+    private final LinkedList<Point> snake = new LinkedList<>(); // Global List to hold all of the Snake's parts (each segment defined by their Positions).
     private Direction currentDirection = Direction.RIGHT; // Set the initial starting direction of the Snake.
     private Direction newDirection = Direction.RIGHT; // Set the new direction of the Snake.
 
@@ -218,7 +219,7 @@ public class Snake {
 
     // Getters:
     // Getter method to retrieve ALL of the Snake's segments (via a List of Points):
-    public List<Point> getSnakeSegments()
+    public LinkedList<Point> getSnakeSegments()
     {
         return this.snake; // Return the entire Snake (List of position Points).
     }
@@ -228,6 +229,8 @@ public class Snake {
     {
         return this.snake.getFirst(); // Return the current GRID coordinates of the Snake's head as a Coordinate Point (get the 0th index containing the position of the Snake's head).
     }
+
+
 
     public Food getFood() { return food; }
     public int getScore() { return score; }
