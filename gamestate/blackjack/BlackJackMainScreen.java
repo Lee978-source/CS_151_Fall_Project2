@@ -108,7 +108,7 @@ public class BlackJackMainScreen {
         }
     }
 
-    public Button getBackToMainMenu() { // new
+    public Button backToMainMenu() { // new
         return this.backButton;
     }
 
