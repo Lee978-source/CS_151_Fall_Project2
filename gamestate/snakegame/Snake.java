@@ -31,8 +31,8 @@ public class Snake {
     private static final int GRID_HEIGHT = 20;
     private static final int POINTS_PER_FOOD = 10;
     private final List<Point> snake = new ArrayList<>(); // Global List to hold all of the Snake's parts (each segment defined by their Positions).
-    private Direction currentDirection = Direction.LEFT; // Set the initial starting direction of the Snake.
-    private Direction newDirection = Direction.LEFT; // Set the new direction of the Snake.
+    private Direction currentDirection = Direction.RIGHT; // Set the initial starting direction of the Snake.
+    private Direction newDirection = Direction.RIGHT; // Set the new direction of the Snake.
 
     //private Snake snake;
     private Food food;
@@ -157,7 +157,7 @@ public class Snake {
             this.newDirection = newDirection; // If the pressed key does NOT turn the Snake 180 degrees, set the pressed key as the new direction.
         }
     }
-
+/*
     public void handleKeyPress(String key) {
         switch (key) {
             case "UP":
@@ -177,7 +177,7 @@ public class Snake {
                 break;
         }
     }
-
+*/
     public void togglePause() {
         paused = !paused;
     }
@@ -207,7 +207,7 @@ public class Snake {
             );
 
             // Reload high scores in GameManager
-            gameManager.loadHighScores();
+            //gameManager.loadHighScores();
 
             System.out.println("High score saved: " + username + " - " + score);
 

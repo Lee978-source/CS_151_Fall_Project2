@@ -416,7 +416,7 @@ public class GameManager extends Application {
     	Button logout = new Button("Logout"); // Button to log out and go back to "Intro" screen.
 
         // Create Main Screen scene for Snake game
-        SnakeMainScreen snakeMainSc = new SnakeMainScreen(this.getPrimaryStage(), this.getUsername()); // Create an instance of the SnakeMainScreen class first.
+        SnakeMainScreen snakeMainSc = new SnakeMainScreen(this.getPrimaryStage(), this.getUsername(), this); // Create an instance of the SnakeMainScreen class first.
         snakeMainSc.createMainMenuScene(); // Second, create Main Menu Scene object from the SnakeMainScreen class.
 
         launchSnake.setOnAction(e -> { // If the user has selected "Play Snake Game" button,

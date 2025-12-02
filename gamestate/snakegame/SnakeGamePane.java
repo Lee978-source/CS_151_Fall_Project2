@@ -100,6 +100,8 @@ public class SnakeGamePane {
             }
         });
 
+        this.game.restart();
+        this.startGameLoop();
         return scene;
     }
 
@@ -179,14 +181,14 @@ public class SnakeGamePane {
         paused = !paused;
         pausedLabel.setVisible(paused);
     }
-
+/*
     private void saveHighScore(){
         try {
             String scoreEntry = username + " Snake " + score;
             List<String> allScores = File
          }
     }
-
+*/
     private void showGameOver() {
         gameLoop.stop();
         Label gameOverLabel = new Label("GAME OVER! Final Score: " + game.getScore());
