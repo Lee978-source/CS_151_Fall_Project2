@@ -36,13 +36,17 @@ public class SnakeGamePane {
     private Stage primaryStage;
     private String username;
     private GameManager gameManager;
-    private Snake game;
-    private Food food;
+    private final Snake game;
     private Canvas canvas;
     private GraphicsContext gc;
     private AnimationTimer gameLoop;
     private long lastUpdate = 0;
     private Label scoreLabel;
+    private Label pausedLabel;
+
+    private boolean paused;
+    private int score;
+    private boolean gameOver;
 
     public SnakeGamePane(Stage primaryStage, String username, GameManager gameManager)
     {
@@ -50,8 +54,7 @@ public class SnakeGamePane {
         this.primaryStage = primaryStage;
         this.username = username;
         this.gameManager = gameManager;
-        this.game = new Snake();
-        this.food = new Food(); // Instantiate a new Food object (allows us to access methods to create and spawn the Food sprite).
+        this.game = new Snake(this.gameManager); // Create a new Snake instance using the GameManager to read and write to the high score files.
     }
 
     public Scene createGameScene() {
@@ -62,8 +65,6 @@ public class SnakeGamePane {
         canvas = new Canvas(600, 500);
         int gridWidth = (int) (this.canvas.getWidth() / cellSize); // Convert the pixels of the canvas into grid-coordinates (ex: 600 / 25 = 24 grids horizontally).
         int gridHeight = (int) (this.canvas.getHeight() / cellSize); // Convert the pixels of the canvas into grid-coordinates (ex: 500 / 25 = 20 grids vertically).
-
-        food.randomSpawn(gridWidth, gridHeight, this.game.getSnakeSegments()); // Call the Food's randomSpawn method (sending the gameboard's total size and the Snake's segments' position Points) to determine where the Food sprite should spawn.
 
         gc = canvas.getGraphicsContext2D();
         root.setCenter(canvas);
@@ -95,6 +96,9 @@ public class SnakeGamePane {
             }
         });
 
+        this.game.restart(); // Key: the game must be initialized first so we can create the Food instance (only one Food instance should be created per game run), THEN we are able to spawn the actual Food sprite correctly using that created instance in the next line.
+        this.game.getFood().randomSpawn(gridWidth, gridHeight, this.game.getSnakeSegments()); // Call the Food's randomSpawn method (sending the gameboard's total size and the Snake's segments' position Points) to determine where the Food sprite should spawn.
+        this.startGameLoop();
         return scene;
     }
 
@@ -117,9 +121,27 @@ public class SnakeGamePane {
             public void handle(long now) {
                 if (now - lastUpdate >= gameSpeed) {
                     if (!game.isPaused() && !game.isGameOver()) {
-                        game.update();
+                        int gridWidth = (int) (canvas.getWidth() / cellSize);
+                        int gridHeight = (int) (canvas.getHeight() / cellSize);
+
+                        Point foodPos = game.getFood().getPosition();
+                        Point head = game.getSnakeHeadPos();
+                        boolean foodAte= (head.x == foodPos.x &&head.y == foodPos.y);
+                        game.move(foodAte);
+
+                        if(foodAte) {
+                            score = score + 10;
+                            scoreLabel.setText(("Your score: " + score));
+                            game.getFood().randomSpawn(gridWidth,gridHeight,game.getSnakeSegments());
+                        }
+                        if(game.collidesWithWall(gridWidth,gridHeight) || game.collidesWithSelf()) {
+                            gameOver = true;
+                            game.saveHighScore(score); // Send the player's new score to the Snake.java class to record it in the high score files.
+                            showGameOver();
+                            return;
+                        }
+                       // game.update();
                         render();
-                        scoreLabel.setText("Score: " + game.getScore());
                     }
                     lastUpdate = now;
                 }
@@ -170,9 +192,21 @@ public class SnakeGamePane {
         }
     }
 
+    private void togglePause() {
+        paused = !paused;
+        pausedLabel.setVisible(paused);
+    }
+/*
+    private void saveHighScore(){
+        try {
+            String scoreEntry = username + " Snake " + score;
+            List<String> allScores = File
+         }
+    }
+*/
     private void showGameOver() {
         gameLoop.stop();
-        Label gameOverLabel = new Label("GAME OVER! Final Score: " + game.getScore());
+        Label gameOverLabel = new Label("GAME OVER! Final Score: " + score);
         gameOverLabel.setFont(Font.font("Arial", FontWeight.BOLD, 36));
         gameOverLabel.setTextFill(Color.web("#c0392bff"));
 

@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 
 public class BlackJackMainScreen {
 
+
     private Stage primaryStage;
     private String username;
     private Scene mainMenuScene;
@@ -43,7 +44,11 @@ public class BlackJackMainScreen {
 
         Button newGameButton = new Button("Start New Game");
         newGameButton.setPrefWidth(200);
-        newGameButton.setOnAction(e -> startNewGame());
+        newGameButton.setOnAction(e -> {
+            BlackJackGamePane gamePane = new BlackJackGamePane(primaryStage, username);
+            Scene gameScene = gamePane.createGameScene();
+            primaryStage.setScene(gameScene);
+        });
 
         this.backButton = new Button("Back to Main Menu");
         backButton.setPrefWidth(200);
@@ -52,16 +57,18 @@ public class BlackJackMainScreen {
         VBox layout = new VBox(20, titleLabel, newGameButton, backButton);
         layout.setAlignment(Pos.CENTER);
 
+
         this.mainMenuScene = new Scene(layout, 800, 600);
     }
 
+/*
     private void startNewGame() {
         this.engine = new BlackJackEngine(1000);
         createGameScene();
         primaryStage.setScene(gameScene);
         primaryStage.setTitle("Blackjack - " + username);
     }
-
+*/
     private void createGameScene() {
         BorderPane root = new BorderPane();
         //Grid showing all players
