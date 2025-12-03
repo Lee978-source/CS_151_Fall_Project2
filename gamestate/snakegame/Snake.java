@@ -51,8 +51,9 @@ public class Snake {
         UP
     }
 
-    public Snake()
+    public Snake(GameManager gameManager)
     {
+        this.gameManager = gameManager; // Get the instance of the GameManager in order to read and write to the high score files.
         this.snake.add(new Point(5, 5)); // Add the head (with a GRID position of x=5 and y=5) to the Snake.
     }
 

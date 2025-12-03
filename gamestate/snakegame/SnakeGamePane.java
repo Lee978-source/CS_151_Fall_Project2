@@ -54,7 +54,7 @@ public class SnakeGamePane {
         this.primaryStage = primaryStage;
         this.username = username;
         this.gameManager = gameManager;
-        this.game = new Snake();
+        this.game = new Snake(this.gameManager); // Create a new Snake instance using the GameManager to read and write to the high score files.
     }
 
     public Scene createGameScene() {

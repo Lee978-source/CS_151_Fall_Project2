@@ -6,3 +6,4 @@ username,BJ,5
 Lordin Yi,BJ,3
 
 hello,SNAKE,25
+null,SNAKE,0
