@@ -81,9 +81,14 @@ public class BlackJackEngine {
 
     //User hits. Returns hand total
     public int userHit(){
-        if (roundOver || user.stands) return user.handValue;
+        if (roundOver || user.stands) {
+            return user.handValue;
+        }
 
         user.handValue += drawCard();
+
+        runAiTurn(player1);   // hits while < 16, then stands
+        runAiTurn(player2);
 
         //dealer "auto plays
         if (!dealerStands && dealerHandValue < 17) {
@@ -91,6 +96,16 @@ public class BlackJackEngine {
             if (dealerHandValue >= 17) {
                 dealerStands = true;
             }
+        }
+
+        //if you hit 21, automatically end
+        if (user.handValue == 21 || dealerHandValue > 21 ) {
+            user.stands = true;
+
+
+
+            settleRound();
+            return user.handValue;
         }
 
         checkUserBust();
@@ -104,7 +119,7 @@ public class BlackJackEngine {
     }
 
     public void userStand(){
-        if (roundOver) {
+        if (roundOver || user.stands) {
             return;
         }
 
@@ -173,6 +188,24 @@ public class BlackJackEngine {
             lastUserNumber = -user.bet;
             roundOver = true;
         }
+
+        // If player hits exactly 21, auto-stand and finish the round
+        if (user.handValue == 21 && !roundOver) {
+            user.stands = true;
+
+            // Let both AIs finish their turns
+            runAiTurn(player1);
+            runAiTurn(player2);
+
+            // Dealer: hit on <= 17, then stand
+            while (dealerHandValue <= 17) {
+                dealerHandValue += drawCard();
+            }
+            dealerStands = true;
+
+            // Now compare everyone vs dealer
+            settleRound();
+        }
     }
 
     /**
@@ -180,11 +213,14 @@ public class BlackJackEngine {
      * and update balances.
      */
     private void settleRound() {
-        if (roundOver) return;
+        if (roundOver) {
+            return;
+        }
 
         settleOnePlayer(user);
         settleOnePlayer(player1);
         settleOnePlayer(player2);
+
 
         roundOver = true;
     }
@@ -193,8 +229,11 @@ public class BlackJackEngine {
         if (p.handValue > 21) {
             // bust – auto lose
             lose(p);
-            if (p == user) lastUserNumber = -p.bet;
-            return;
+            if (p == user) {
+                lastUserNumber = -p.bet;
+                return;
+            }
+
         }
 
         if (dealerHandValue > 21) {
@@ -202,13 +241,17 @@ public class BlackJackEngine {
             if (p == user) lastUserNumber = p.bet;
         } else if (p.handValue > dealerHandValue) {
             win(p);
-            if (p == user) lastUserNumber = p.bet;
+            if (p == user){
+                lastUserNumber = p.bet;
+            }
         } else if (p.handValue < dealerHandValue) {
             lose(p);
-            if (p == user) lastUserNumber = -p.bet;
+            if (p == user){
+                lastUserNumber = -p.bet;
+            }
         } else {
-            push(p);
-            if (p == user) lastUserNumber = 0;
+            win(p);
+            if (p == user) lastUserNumber = p.bet;
         }
     }
 

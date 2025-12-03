@@ -14,11 +14,18 @@ public class BlackJackGamePane {
     private final String username;
     private final BlackJackEngine engine;
 
-    // UI pieces we’ll update
+    // UI pieces TODO update
     private Label balanceLabel;
     private Label userHandLabel;
     private Label dealerHandLabel;
     private Label statusLabel;
+    private Label ai1HandLabel;
+    private Label ai2HandLabel;
+
+
+    private Button hitButton;
+    private Button standButton;
+    private Button nextRoundButton;   // hook this up after Hit/Stand
 
     public BlackJackGamePane(Stage primaryStage, String username) {
         this.primaryStage = primaryStage;
@@ -44,9 +51,20 @@ public class BlackJackGamePane {
         balanceLabel = new Label();
         userHandLabel = new Label();
         dealerHandLabel = new Label();
-        statusLabel = new Label("Round in progress...");
+        statusLabel = new Label();
+        ai1HandLabel = new Label();
+        ai2HandLabel = new Label();
 
-        VBox centerBox = new VBox(10, balanceLabel, userHandLabel, dealerHandLabel, statusLabel);
+        VBox centerBox = new VBox(20,
+
+                balanceLabel,
+                userHandLabel,
+                ai1HandLabel,      // NEW
+                ai2HandLabel,      // NEW
+                dealerHandLabel,
+                statusLabel
+
+        );
         centerBox.setAlignment(Pos.CENTER);
         root.setCenter(centerBox);
 
@@ -59,21 +77,61 @@ public class BlackJackGamePane {
         });
 
 
-        HBox bottomBox = new HBox(backBtn);
+        hitButton = new Button("Hit");
+        standButton = new Button("Stand");
+        nextRoundButton = new Button("Next Round");
+
+        Button backButton = new Button("Back to Blackjack Menu");   // <- local
+        HBox buttonRow = new HBox(10, hitButton, standButton, nextRoundButton);
+        buttonRow.setAlignment(Pos.CENTER);
+
+        VBox bottomBox = new VBox(10, buttonRow, backButton);
         bottomBox.setAlignment(Pos.CENTER);
-        bottomBox.setSpacing(10);
         root.setBottom(bottomBox);
 
-        //3. Fill labels from engine
+        hitButton.setOnAction(e -> {
+            engine.userHit();     // tell engine the user hit
+            refreshLabels();      // update balance / totals / status text
+
+            // If the round has ended after this hit, lock buttons and enable Next Round
+            if (engine.isRoundOver()) {
+                hitButton.setDisable(true);
+                standButton.setDisable(true);
+                nextRoundButton.setDisable(false);
+            }
+        });
+
+        standButton.setOnAction(e -> {
+            engine.userStand();   // let engine finish dealer & AI, then settle
+            refreshLabels();
+
+            hitButton.setDisable(true);
+            standButton.setDisable(true);
+            nextRoundButton.setDisable(false);
+        });
+
+        // back button handler to BlackJackMain screen
+        backButton.setOnAction(e -> {
+            BlackJackMainScreen main = new BlackJackMainScreen(primaryStage, username);
+            main.createMainMenuScene();
+            primaryStage.setScene(main.getMainMenuScene());
+        });
+
         refreshLabels();
 
         return new Scene(root, 800, 600);
     }
 
     //add refresh helper
-    private void refreshLabels(){
+    private void refreshLabels() {
         balanceLabel.setText("Balance: $" + engine.getUserBalance());
         userHandLabel.setText("Your hand total: " + engine.getUserHandValue());
         dealerHandLabel.setText("Dealer hand total: " + engine.getDealerHandValue());
+        ai1HandLabel.setText("Player 1 hand total: " + engine.getAi1HandValue());
+        ai2HandLabel.setText("Player 2 hand total: " + engine.getAi2HandValue());
+
+        if (engine.isRoundOver()) {
+            statusLabel.setText("Round over: Earnings: " + engine.getLastUserDelta());
+        }
     }
 }
