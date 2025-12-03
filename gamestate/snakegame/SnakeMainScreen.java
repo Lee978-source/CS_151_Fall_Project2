@@ -32,22 +32,22 @@ public class SnakeMainScreen {
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(50));
-        root.setStyle("-fx-background-color: #324960ff;");
+        root.setStyle("-fx-background-color: rgba(137,226,234,0.9);");
 
         Label title = new Label("SNAKE GAME");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 48));
-        title.setStyle("-fx-text-fill: #c941b2ff;");
+        title.setStyle("-fx-text-fill: #f38fa9;");
 
         Button startButton = new Button("START GAME");
-        styleButton(startButton, "#27ae60ff");
+        styleButton(startButton," #f38fa9");
         startButton.setOnAction(e -> startGame());
 
         Button instructionsButton = new Button("INSTRUCTIONS");
-        styleButton(instructionsButton, "#2980b9ff");
+        styleButton(instructionsButton, "#f38fa9");
         instructionsButton.setOnAction(e -> showInstructions());
 
         Button backButton = new Button("BACK TO MAIN MENU");
-        styleButton(backButton, "#c0392bff");
+        styleButton(backButton, "#f38fa9");
         backButton.setOnAction(e -> backToMainMenu());
 
         root.getChildren().addAll(title, startButton, instructionsButton, backButton);
@@ -69,23 +69,39 @@ public class SnakeMainScreen {
         VBox root = new VBox(15);
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(40));
-        root.setStyle("-fx-background-color: #2C3E50;");
+        root.setStyle("-fx-background-color: rgba(137,226,234,0.9);");
 
         Label title = new Label("HOW TO PLAY");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 36));
-        title.setStyle("-fx-text-fill: #792cbcff;");
+        title.setStyle("-fx-text-fill: #f38fa9;");
 
         String instructions =
-                ""; //We will fill this in later with actual instructions together.
+                "🎮 CONTROLS:\n" +
+                        "   • Use arrow keys (↑ ↓ ← →) to control the snake\n" +
+                        "   • Press ESC to pause/resume the game\n\n" +
+
+                        "🎯 OBJECTIVE:\n" +
+                        "   • Eat the red food to grow longer\n" +
+                        "   • Each food gives you 10 points\n\n" +
+
+                        "⚠️ AVOID:\n" +
+                        "   • Running into walls\n" +
+                        "   • Running into yourself\n\n" +
+
+                        "🏆 SCORING:\n" +
+                        "   • Your score increases as you eat more food\n" +
+                        "   • Try to beat the top 5 high scores!\n\n" +
+
+                        "Game over when the snake crashes into a wall or itself.";
 
         Label instructionsLabel = new Label(instructions);
-        instructionsLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 16));
-        instructionsLabel.setStyle("-fx-text-fill: white;");
+        instructionsLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 18));
+        instructionsLabel.setStyle("-fx-text-fill:#2c3e50;");
         instructionsLabel.setWrapText(true);
         instructionsLabel.setMaxWidth(600);
 
         Button backButton = new Button("BACK TO MENU");
-        styleButton(backButton, "#297cb4ff");
+        styleButton(backButton, "#f38fa9");
         backButton.setOnAction(e ->
                 primaryStage.setScene(getMainMenuScene())
         );

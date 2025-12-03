@@ -61,6 +61,7 @@ public class SnakeGamePane {
         root.setStyle("-fx-background-color: #1e272eff;");
 
         canvas = new Canvas(600, 500);
+        canvas.setFocusTraversable(true);
         int gridWidth = (int) (this.canvas.getWidth() / cellSize);
         int gridHeight = (int) (this.canvas.getHeight() / cellSize);
         gc = canvas.getGraphicsContext2D();
@@ -108,6 +109,8 @@ public class SnakeGamePane {
         }
         paused =false;
         this.startGameLoop();
+
+       // canvas.requestFocus();
         return scene;
     }
 
@@ -118,26 +121,27 @@ public class SnakeGamePane {
 
         Label pauseLabel = new Label("PAUSED");
         pauseLabel.setFont(Font.font("Trebuchet MS", FontWeight.BOLD,48));
-        pauseLabel.setTextFill(Color.BLACK);
+        pauseLabel.setTextFill(Color.web("f38fa9"));
 
         Button resumeButton = new Button("RESUME");
-        styleButton(resumeButton, "#27ae60");
+        styleButton(resumeButton, "#f38fa9");
         resumeButton.setOnAction(e -> {
             game.togglePause();
-            paused = false;
+            paused = game.isPaused();
             pauseBox.setVisible(false);
+            canvas.requestFocus();
         });
 
         Button restartButton = new Button("RESTART");
-        styleButton(restartButton, "#3498db");
+        styleButton(restartButton, "#f38fa9");
         restartButton.setOnAction(e -> restart());
 
         Button snakeMenuButton = new Button("SNAKE MENU");
-        styleButton(snakeMenuButton, "#e67e22");
+        styleButton(snakeMenuButton, "#f38fa9");
         snakeMenuButton.setOnAction(e -> returnToSnakeMenu());
 
         Button mainMenuButton = new Button("MAIN MENU");
-        styleButton(mainMenuButton, "#c0392b");
+        styleButton(mainMenuButton, "#f38fa9");
         mainMenuButton.setOnAction(e -> returnToMainMenu());
 
         pauseBox.getChildren().addAll(
@@ -244,8 +248,8 @@ public class SnakeGamePane {
     }*/
 
     private void togglePauseMenu(VBox pauseMenu) {
-        paused = !paused;
         game.togglePause();
+        paused = game.isPaused();
         pauseMenu.setVisible(paused);
     }
 /*
