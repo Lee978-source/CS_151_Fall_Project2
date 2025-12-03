@@ -1,5 +1,6 @@
 package gamestate.blackjack;
-
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -26,6 +27,45 @@ public class BlackJackGamePane {
     private Button hitButton;
     private Button standButton;
     private Button nextRoundButton;   // hook this up after Hit/Stand
+
+    private void playRemainingPlayersWithDelay() {
+        // Disable controls while the AIs + dealer play
+        hitButton.setDisable(true);
+        standButton.setDisable(true);
+        nextRoundButton.setDisable(true);
+
+        // 1-second delay for each step
+        PauseTransition p1 = new PauseTransition(Duration.seconds(1));
+        PauseTransition p2 = new PauseTransition(Duration.seconds(1));
+        PauseTransition p3 = new PauseTransition(Duration.seconds(1));
+
+        // After 1 second → AI1
+        p1.setOnFinished(e -> {
+            engine.ai1Turn();
+            refreshLabels();
+            statusLabel.setText("Player 1 finished their turn.");
+            p2.play();   // chain next step
+        });
+
+        // After 2 seconds total → AI2
+        p2.setOnFinished(e -> {
+            engine.ai2Turn();
+            refreshLabels();
+            statusLabel.setText("Player 2 finished their turn.");
+            p3.play();   // chain next step
+        });
+
+        // After 3 seconds total → Dealer + settle
+        p3.setOnFinished(e -> {
+            engine.dealerTurnAndSettle();
+            refreshLabels();
+            statusLabel.setText("Round over: Earnings " + engine.getLastUserDelta());
+            nextRoundButton.setDisable(false);  // now user can go to next round
+        });
+
+        p1.play();  // kick off the chain
+    }
+
 
     public BlackJackGamePane(Stage primaryStage, String username) {
         this.primaryStage = primaryStage;
@@ -90,25 +130,41 @@ public class BlackJackGamePane {
         root.setBottom(bottomBox);
 
         hitButton.setOnAction(e -> {
-            engine.userHit();     // tell engine the user hit
-            refreshLabels();      // update balance / totals / status text
+            statusLabel.setText("You hit... waiting.");
+            hitButton.setDisable(true);
+            standButton.setDisable(true);
 
-            // If the round has ended after this hit, lock buttons and enable Next Round
-            if (engine.isRoundOver()) {
-                hitButton.setDisable(true);
-                standButton.setDisable(true);
-                nextRoundButton.setDisable(false);
-            }
+            PauseTransition pause = new PauseTransition(Duration.seconds(3));
+            pause.setOnFinished(ev -> {
+                // Apply the hit
+                engine.userHit();
+                refreshLabels();
+
+                // Bust or hit 21, round is over
+                if (engine.isRoundOver()) {
+                    statusLabel.setText("Round over after your hit.");
+                    // Lets AI1, AI2, Dealer play with delays
+                    playRemainingPlayersWithDelay();
+                } else {
+                    // Still your turn
+                    statusLabel.setText("Your turn again: Hit or Stand?");
+                    hitButton.setDisable(false);
+                    standButton.setDisable(false);
+                }
+            });
+            pause.play();
         });
 
         standButton.setOnAction(e -> {
             engine.userStand();   // let engine finish dealer & AI, then settle
             refreshLabels();
 
-            hitButton.setDisable(true);
-            standButton.setDisable(true);
-            nextRoundButton.setDisable(false);
+            statusLabel.setText("You chose to stand.");
+            playRemainingPlayersWithDelay();
         });
+
+
+
 
         engine.startNewRound(50);   // first round
 

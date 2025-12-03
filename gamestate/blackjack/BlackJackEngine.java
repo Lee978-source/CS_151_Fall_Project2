@@ -125,10 +125,18 @@ public class BlackJackEngine {
 
         user.stands = true;
 
-        // Players take their turns
-        runAiTurn(player1);
-        runAiTurn(player2);
 
+    }
+
+    public void ai1Turn() {
+        runAiTurn(player1);
+    }
+
+    public void ai2Turn() {
+        runAiTurn(player2);
+    }
+
+    public void dealerTurnAndSettle() {
         // Dealer turn: hit on <= 17
         while (dealerHandValue <= 17) {
             dealerHandValue += drawCard();
@@ -270,37 +278,47 @@ public class BlackJackEngine {
     // ---------- getters for UI/debug ----------
 
     public int getUserHandValue()   {
+
         return user.handValue;
     }
     public int getAi1HandValue()    {
+
         return player1.handValue;
     }
     public int getAi2HandValue()    {
+
         return player2.handValue;
     }
     public int getDealerHandValue() {
+
         return dealerHandValue;
     }
 
     public int getUserBalance() {
+
         return user.balance;
     }
     public int getAi1Balance()  {
+
         return player1.balance;
     }
     public int getAi2Balance()  {
+
         return player2.balance;
     }
 
     public int getUserBet() {
+
         return user.bet;
     }
 
     public int getLastUserDelta() {
+
         return lastUserNumber;
     }
 
-    public boolean isRoundOver() { return roundOver; }
+    public boolean isRoundOver() {
+        return roundOver; }
 
 }
 
