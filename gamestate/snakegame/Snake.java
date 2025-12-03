@@ -54,6 +54,8 @@ public class Snake {
     public Snake(GameManager gameManager)
     {
         this.gameManager = gameManager; // Get the instance of the GameManager in order to read and write to the high score files.
+        this.username = this.gameManager.getUsername(); // Store the current player's username for score recording when the game ends.
+
         this.snake.add(new Point(5, 5)); // Add the head (with a GRID position of x=5 and y=5) to the Snake.
     }
 
