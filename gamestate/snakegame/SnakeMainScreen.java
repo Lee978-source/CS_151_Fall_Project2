@@ -114,10 +114,8 @@ public class SnakeMainScreen {
     }
 
     private void backToMainMenu() {
-        // TODO: Return to Game Manager main menu
-        System.out.println("Back to main menu (to be implemented with Game Manager)");
-        // For now, just show this menu again
-        primaryStage.setScene(getMainMenuScene());
+        // Get the Main Menu screen from the Game Manager and set it as the current scene.
+        primaryStage.setScene(this.gameManager.getMainScreen());
     }
 
 }
