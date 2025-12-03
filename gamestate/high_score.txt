@@ -14,3 +14,4 @@ Lloyd Garmadon123,SNAKE,10
 Lloyd Garmadon123,SNAKE,80
 Lloyd Garmadon123,SNAKE,100
 Lloyd Garmadon123,SNAKE,80
+Lordin Yi,SNAKE,20

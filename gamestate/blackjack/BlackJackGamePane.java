@@ -79,7 +79,7 @@ public class BlackJackGamePane {
 
         hitButton = new Button("Hit");
         standButton = new Button("Stand");
-        nextRoundButton = new Button("Next Round");
+        nextRoundButton = new Button("New Round");
 
         Button backButton = new Button("Back to Blackjack Menu");   // <- local
         HBox buttonRow = new HBox(10, hitButton, standButton, nextRoundButton);
@@ -108,6 +108,21 @@ public class BlackJackGamePane {
             hitButton.setDisable(true);
             standButton.setDisable(true);
             nextRoundButton.setDisable(false);
+        });
+
+        engine.startNewRound(50);   // first round
+
+        nextRoundButton.setOnAction(e -> {
+
+            engine.startNewRound(50);
+            statusLabel.setText("");
+
+            //refresh all the totals on screen
+            refreshLabels();
+
+            hitButton.setDisable(false);
+            standButton.setDisable(false);
+            nextRoundButton.setDisable(true);
         });
 
         // back button handler to BlackJackMain screen
