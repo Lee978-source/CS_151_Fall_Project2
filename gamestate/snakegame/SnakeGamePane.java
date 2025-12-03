@@ -107,7 +107,6 @@ public class SnakeGamePane {
             game.togglePause();
         }
         paused =false;
-        this.game.getFood().randomSpawn(gridWidth, gridHeight, this.game.getSnakeSegments()); // Call the Food's randomSpawn method (sending the gameboard's total size and the Snake's segments' position Points) to determine where the Food sprite should spawn.
         this.startGameLoop();
         return scene;
     }

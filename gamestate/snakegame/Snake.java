@@ -55,9 +55,18 @@ public class Snake {
     {
         this.gameManager = gameManager; // Get the instance of the GameManager in order to read and write to the high score files.
         this.username = this.gameManager.getUsername(); // Store the current player's username for score recording when the game ends.
-
-        this.snake.add(new Point(5, 5)); // Add the head (with a GRID position of x=5 and y=5) to the Snake.
         this.paused =false;
+    }
+
+    // Helper method to ensure the Snake always starts with only 1 segment (the Head) and moves in the RIGHT direction:
+    private void restartSnake()
+    {
+        this.currentDirection = Direction.RIGHT; // Set the initial starting direction of the Snake (needed in case the previous key press was a different Direction).
+        this.newDirection = Direction.RIGHT; // Set the new direction of the Snake (needed in case the previous key press was a different Direction).
+
+        this.snake.clear(); // If we are starting a new Snake game or restarting the Snake game after a Game Over, clear out any Snake's segments first.
+
+        this.snake.add(new Point(5, 5)); // Then add a NEW head to the Snake (at GRID position x=5 and y=5) at the original starting point (Snake will always have 1 segment upon start/restart).
     }
 
     public void move(boolean grow) {
@@ -89,9 +98,10 @@ public class Snake {
     }
 
     private void initGame() {
-        //snake = new Snake();
-        this.food = new Food();
-        this.food.randomSpawn(GRID_WIDTH, GRID_HEIGHT, snake);
+
+        this.restartSnake(); // Create the Snake with 1 segment.
+        this.food = new Food(); // Create a new Food instance (only one per game run).
+        this.food.randomSpawn(GRID_WIDTH, GRID_HEIGHT, snake); // Call the Food's randomSpawn method (sending the gameboard's total size and the Snake's segments' position Points) to determine where the Food sprite should spawn.
         score = 0;
         gameOver = false;
         paused = false;
