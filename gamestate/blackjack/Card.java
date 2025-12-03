@@ -41,6 +41,10 @@ public class Card {
         }
     }
 
+    public int getNumValue() {
+        return rank.getValue();
+    }
+
     @Override
     public String toString() {
         return rank + " of " + suit;
