@@ -131,12 +131,12 @@ public class SnakeGamePane {
 
                         if(foodAte) {
                             score = score + 10;
-                             scoreLabel.setText(("Your score: " + score));
+                            scoreLabel.setText(("Your score: " + score));
                             game.getFood().randomSpawn(gridWidth,gridHeight,game.getSnakeSegments());
                         }
                         if(game.collidesWithWall(gridWidth,gridHeight) || game.collidesWithSelf()) {
                             gameOver = true;
-                            game.saveHighScore();
+                            game.saveHighScore(score); // Send the player's new score to the Snake.java class to record it in the high score files.
                             showGameOver();
                             return;
                         }
@@ -206,7 +206,7 @@ public class SnakeGamePane {
 */
     private void showGameOver() {
         gameLoop.stop();
-        Label gameOverLabel = new Label("GAME OVER! Final Score: " + game.getScore());
+        Label gameOverLabel = new Label("GAME OVER! Final Score: " + score);
         gameOverLabel.setFont(Font.font("Arial", FontWeight.BOLD, 36));
         gameOverLabel.setTextFill(Color.web("#c0392bff"));
 
