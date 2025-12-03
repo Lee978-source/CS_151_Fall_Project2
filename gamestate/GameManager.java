@@ -197,8 +197,8 @@ public class GameManager extends Application {
 
 
 
-    //private helper method for high score
-    private void loadHighScores() {
+    // helper method for high score
+    public void loadHighScores() {
         allHighScores = new ArrayList<>();
 
         try {

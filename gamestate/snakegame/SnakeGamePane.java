@@ -186,6 +186,8 @@ public class SnakeGamePane {
                         if(game.collidesWithWall(gridWidth,gridHeight) || game.collidesWithSelf()) {
                             gameOver = true;
                             game.saveHighScore(score); // Send the player's new score to the Snake.java class to record it in the high score files.
+                            gameManager.loadHighScores(); // Load the UPDATED recorded high scores from the files and put them into the GameManager's global scores List.
+                            gameManager.setMainScreen(); // Refresh the Main Menu scene to print the high scores from the GameManager's UPDATED global scores List after a new score is recorded.
                             showGameOver();
                             return;
                         }
