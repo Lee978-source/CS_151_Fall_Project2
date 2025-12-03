@@ -8,7 +8,6 @@ package gamestate.snakegame;
 
 import gamestate.GameManager;
 import javafx.stage.Stage;
-import javax.swing.*;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -25,7 +24,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.stage.Stage;
+
 import java.awt.Point;
 
 public class SnakeGamePane {
@@ -42,7 +41,6 @@ public class SnakeGamePane {
     private AnimationTimer gameLoop;
     private long lastUpdate = 0;
     private Label scoreLabel;
-    private Label pausedLabel;
 
     private boolean paused;
     private int score;
@@ -54,7 +52,7 @@ public class SnakeGamePane {
         this.primaryStage = primaryStage;
         this.username = username;
         this.gameManager = gameManager;
-        this.game = new Snake(this.gameManager); // Create a new Snake instance using the GameManager to read and write to the high score files.
+        this.game = new Snake(this.gameManager);
     }
 
     public Scene createGameScene() {
@@ -63,11 +61,15 @@ public class SnakeGamePane {
         root.setStyle("-fx-background-color: #1e272eff;");
 
         canvas = new Canvas(600, 500);
-        int gridWidth = (int) (this.canvas.getWidth() / cellSize); // Convert the pixels of the canvas into grid-coordinates (ex: 600 / 25 = 24 grids horizontally).
-        int gridHeight = (int) (this.canvas.getHeight() / cellSize); // Convert the pixels of the canvas into grid-coordinates (ex: 500 / 25 = 20 grids vertically).
-
+        int gridWidth = (int) (this.canvas.getWidth() / cellSize);
+        int gridHeight = (int) (this.canvas.getHeight() / cellSize);
         gc = canvas.getGraphicsContext2D();
-        root.setCenter(canvas);
+
+       VBox pauseMenu = createPauseMenu();
+        pauseMenu.setVisible(false);
+
+        StackPane centerPane = new StackPane(canvas,pauseMenu);
+        root.setCenter(centerPane);
 
         HBox topBar = new HBox(20);
         topBar.setPadding(new Insets(10));
@@ -76,12 +78,16 @@ public class SnakeGamePane {
         scoreLabel = new Label("Score: 0");
         scoreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         scoreLabel.setTextFill(Color.web("#f39c12ff"));
-        topBar.getChildren().add(scoreLabel);
+
+        Button quitButton = new Button("Quit");
+        quitButton.setOnAction(e -> returnToSnakeMenu());
+        quitButton.setStyle("-fx-background-color: #d368d2; -fx-text-fill: white;");
+        topBar.getChildren().addAll(scoreLabel,quitButton);
 
         root.setTop(topBar);
 
         Scene scene = new Scene(root, 600, 550);
-
+        root.requestFocus();
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.UP) {
                 game.setNextDirection(Snake.Direction.UP);
@@ -91,15 +97,59 @@ public class SnakeGamePane {
                 game.setNextDirection(Snake.Direction.LEFT);
             } else if (e.getCode() == KeyCode.RIGHT) {
                 game.setNextDirection(Snake.Direction.RIGHT);
-            } else if (e.getCode() == KeyCode.P) {
-                togglePause();
+            } else if (e.getCode() == KeyCode.ESCAPE) {
+                togglePauseMenu(pauseMenu);
             }
         });
 
         this.game.restart(); // Key: the game must be initialized first so we can create the Food instance (only one Food instance should be created per game run), THEN we are able to spawn the actual Food sprite correctly using that created instance in the next line.
+        if(game.isPaused()) {
+            game.togglePause();
+        }
+        paused =false;
         this.game.getFood().randomSpawn(gridWidth, gridHeight, this.game.getSnakeSegments()); // Call the Food's randomSpawn method (sending the gameboard's total size and the Snake's segments' position Points) to determine where the Food sprite should spawn.
         this.startGameLoop();
         return scene;
+    }
+
+    private VBox createPauseMenu() {
+        VBox pauseBox = new VBox(20);
+        pauseBox.setAlignment(Pos.CENTER);
+        pauseBox.setStyle("-fx-background-color: rgba(137,226,234,0.9)");
+
+        Label pauseLabel = new Label("PAUSED");
+        pauseLabel.setFont(Font.font("Trebuchet MS", FontWeight.BOLD,48));
+        pauseLabel.setTextFill(Color.BLACK);
+
+        Button resumeButton = new Button("RESUME");
+        styleButton(resumeButton, "#27ae60");
+        resumeButton.setOnAction(e -> {
+            game.togglePause();
+            paused = false;
+            pauseBox.setVisible(false);
+        });
+
+        Button restartButton = new Button("RESTART");
+        styleButton(restartButton, "#3498db");
+        restartButton.setOnAction(e -> restart());
+
+        Button snakeMenuButton = new Button("SNAKE MENU");
+        styleButton(snakeMenuButton, "#e67e22");
+        snakeMenuButton.setOnAction(e -> returnToSnakeMenu());
+
+        Button mainMenuButton = new Button("MAIN MENU");
+        styleButton(mainMenuButton, "#c0392b");
+        mainMenuButton.setOnAction(e -> returnToMainMenu());
+
+        pauseBox.getChildren().addAll(
+                pauseLabel,
+                resumeButton,
+                restartButton,
+                snakeMenuButton,
+                mainMenuButton
+        );
+
+        return pauseBox;
     }
 
     private HBox createTopBar() {
@@ -170,7 +220,7 @@ public class SnakeGamePane {
         scoreLabel.setText("Score: " + game.getScore());
     }
 
-    private void handleKeyPress(KeyCode code) {
+    /*private void handleKeyPress(KeyCode code) {
         switch (code) {
             case UP:
                 game.setNextDirection(Snake.Direction.UP);
@@ -190,11 +240,12 @@ public class SnakeGamePane {
             default:
                 break;
         }
-    }
+    }*/
 
-    private void togglePause() {
+    private void togglePauseMenu(VBox pauseMenu) {
         paused = !paused;
-        pausedLabel.setVisible(paused);
+        game.togglePause();
+        pauseMenu.setVisible(paused);
     }
 /*
     private void saveHighScore(){
@@ -206,15 +257,30 @@ public class SnakeGamePane {
 */
     private void showGameOver() {
         gameLoop.stop();
+        VBox gameOverBox = new VBox(20);
+        gameOverBox.setAlignment(Pos.CENTER);
+        gameOverBox.setStyle("-fx-background-color: rgba(137,226,234,0.9);");
+
         Label gameOverLabel = new Label("GAME OVER! Final Score: " + score);
         gameOverLabel.setFont(Font.font("Arial", FontWeight.BOLD, 36));
-        gameOverLabel.setTextFill(Color.web("#c0392bff"));
+        gameOverLabel.setTextFill(Color.web("#f38fa9"));
 
-        StackPane overlay = new StackPane(gameOverLabel);
-        overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
+        Button restartButton = new Button("RESTART");
+        styleButton(restartButton, "#f38fa9");
+        restartButton.setOnAction(e -> restart());
+
+        Button snakeMenuButton = new Button("MAIN MENU");
+        styleButton(restartButton," #f38fa9");
+        snakeMenuButton.setOnAction(e -> returnToSnakeMenu());
+
+        gameOverBox.getChildren().addAll(gameOverLabel,restartButton,snakeMenuButton);
+
+        StackPane overlay = new StackPane(gameOverBox);
         overlay.setPrefSize(canvas.getWidth(), canvas.getHeight());
 
-        ((BorderPane) canvas.getParent()).setCenter(overlay);
+        BorderPane root = (BorderPane) canvas.getScene().getRoot();
+        StackPane centerPane = (StackPane) root.getCenter();
+        centerPane.getChildren().add(overlay);
     }
 
     private void styleButton(Button button, String color) {
@@ -248,8 +314,11 @@ public class SnakeGamePane {
     }
 
     private void restart() {
-        game.restart();
+        score = 0;
+        gameOver =false;
+        paused = false;
         lastUpdate = 0;
+
         primaryStage.setScene(createGameScene());
     }
 
@@ -258,8 +327,8 @@ public class SnakeGamePane {
             gameLoop.stop();
         }
         SnakeMainScreen mainScreen = new SnakeMainScreen(primaryStage, username, gameManager);
+        mainScreen.createMainMenuScene();
         primaryStage.setScene(mainScreen.getMainMenuScene());
-        primaryStage.setTitle("Snake Game Menu");
     }
 
     private void returnToMainMenu() {

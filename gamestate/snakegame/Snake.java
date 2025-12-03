@@ -57,6 +57,7 @@ public class Snake {
         this.username = this.gameManager.getUsername(); // Store the current player's username for score recording when the game ends.
 
         this.snake.add(new Point(5, 5)); // Add the head (with a GRID position of x=5 and y=5) to the Snake.
+        this.paused =false;
     }
 
     public void move(boolean grow) {
@@ -161,6 +162,7 @@ public class Snake {
 
     public void restart() {
         initGame();
+        this.paused = false;
     }
 
     // Save high score in GameManager format: username,SNAKE,score
