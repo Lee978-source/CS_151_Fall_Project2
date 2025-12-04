@@ -36,7 +36,7 @@ public class SnakeMainScreen {
 
         Label title = new Label("SNAKE GAME");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 48));
-        title.setStyle("-fx-text-fill: #f38fa9;");
+        title.setStyle("-fx-text-fill: #FFDA03;");
 
         Button startButton = new Button("START GAME");
         styleButton(startButton," #f38fa9");
@@ -73,7 +73,7 @@ public class SnakeMainScreen {
 
         Label title = new Label("HOW TO PLAY");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 36));
-        title.setStyle("-fx-text-fill: #f38fa9;");
+        title.setStyle("-fx-text-fill: #FFDA03;");
 
         String instructions =
                 "🎮 CONTROLS:\n" +

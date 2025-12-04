@@ -120,7 +120,7 @@ public class SnakeGamePane {
 
         Label pauseLabel = new Label("PAUSED");
         pauseLabel.setFont(Font.font("Arial", FontWeight.BOLD,48));
-        pauseLabel.setTextFill(Color.web("f38fa9"));
+        pauseLabel.setTextFill(Color.web("FFDA03"));
 
         Button resumeButton = new Button("RESUME");
         styleButton(resumeButton, "#f38fa9");
@@ -229,7 +229,7 @@ public class SnakeGamePane {
         restartButton.setOnAction(e -> restart());
 
         Button snakeMenuButton = new Button("MAIN MENU");
-        styleButton(restartButton," #f38fa9");
+        styleButton(snakeMenuButton," #f38fa9");
         snakeMenuButton.setOnAction(e -> returnToSnakeMenu());
 
         gameOverBox.getChildren().addAll(gameOverLabel,restartButton,snakeMenuButton);
