@@ -55,7 +55,7 @@ public class SnakeMainScreen {
     }
 
     public Scene getMainMenuScene() {
-        return this.mainMenuScene; // Return the Main Menu Scene of the game.
+        return this.mainMenuScene;
     }
 
     private void startGame() {

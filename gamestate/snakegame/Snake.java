@@ -145,27 +145,7 @@ public class Snake {
             this.newDirection = newDirection; // If the pressed key does NOT turn the Snake 180 degrees, set the pressed key as the new direction.
         }
     }
-/*
-    public void handleKeyPress(String key) {
-        switch (key) {
-            case "UP":
-                snake.setDirection(Direction.UP);
-                break;
-            case "DOWN":
-                snake.setDirection(Direction.DOWN);
-                break;
-            case "LEFT":
-                snake.setDirection(Direction.LEFT);
-                break;
-            case "RIGHT":
-                snake.setDirection(Direction.RIGHT);
-                break;
-            case "ESCAPE":
-                togglePause();
-                break;
-        }
-    }
-*/
+
     public void togglePause() {
         paused = !paused;
     }
@@ -224,7 +204,4 @@ public class Snake {
     public int getScore() { return score; }
     public boolean isGameOver() { return gameOver; }
     public boolean isPaused() { return paused; }
-    public int getGridWidth() { return GRID_WIDTH; }
-    public int getGridHeight() { return GRID_HEIGHT; }
-    public String getUsername() { return username; }
 }

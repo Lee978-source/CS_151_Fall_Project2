@@ -62,8 +62,6 @@ public class SnakeGamePane {
 
         canvas = new Canvas(600, 500);
         canvas.setFocusTraversable(true);
-        int gridWidth = (int) (this.canvas.getWidth() / cellSize);
-        int gridHeight = (int) (this.canvas.getHeight() / cellSize);
         gc = canvas.getGraphicsContext2D();
 
        VBox pauseMenu = createPauseMenu();
@@ -103,14 +101,13 @@ public class SnakeGamePane {
             }
         });
 
-        this.game.restart(); // Key: the game must be initialized first so we can create the Food instance (only one Food instance should be created per game run), THEN we are able to spawn the actual Food sprite correctly using that created instance in the next line.
+        this.game.restart();
         if(game.isPaused()) {
             game.togglePause();
         }
         paused =false;
         this.startGameLoop();
 
-       // canvas.requestFocus();
         return scene;
     }
 
@@ -225,41 +222,13 @@ public class SnakeGamePane {
         scoreLabel.setText("Score: " + game.getScore());
     }
 
-    /*private void handleKeyPress(KeyCode code) {
-        switch (code) {
-            case UP:
-                game.setNextDirection(Snake.Direction.UP);
-                break;
-            case DOWN:
-                game.setNextDirection(Snake.Direction.DOWN);
-                break;
-            case LEFT:
-                game.setNextDirection(Snake.Direction.LEFT);
-                break;
-            case RIGHT:
-                game.setNextDirection(Snake.Direction.RIGHT);
-                break;
-            case P:
-                togglePause();
-                break;
-            default:
-                break;
-        }
-    }*/
 
     private void togglePauseMenu(VBox pauseMenu) {
         game.togglePause();
         paused = game.isPaused();
         pauseMenu.setVisible(paused);
     }
-/*
-    private void saveHighScore(){
-        try {
-            String scoreEntry = username + " Snake " + score;
-            List<String> allScores = File
-         }
-    }
-*/
+
     private void showGameOver() {
         gameLoop.stop();
         VBox gameOverBox = new VBox(20);
@@ -341,7 +310,6 @@ public class SnakeGamePane {
             gameLoop.stop();
         }
         primaryStage.setScene(gameManager.getMainScreen());
-        //primaryStage.setTitle("Welcome, " + username + "! What game would you like to play today?");
     }
 
     public static int getCellSize()
