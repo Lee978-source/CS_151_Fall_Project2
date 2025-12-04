@@ -429,15 +429,11 @@ public class GameManager extends Application {
         });
 
         // Create Main Screen scene for Blackjack game
-        BlackJackMainScreen BJMainSc = new BlackJackMainScreen(this.getPrimaryStage(), this.getUsername()); // Create an instance of the BlackJackMainScreen class first.
+        BlackJackMainScreen BJMainSc = new BlackJackMainScreen(this.getPrimaryStage(), this.getUsername(), this); // Create an instance of the BlackJackMainScreen class first.
         BJMainSc.createMainMenuScene(); // Second, create Main Menu Scene object from the BlackJackMainScreen class.
 
         launchBlackJack.setOnAction(e -> { // If the user has selected "Play Blackjack" button,
             this.getPrimaryStage().setScene(BJMainSc.getMainMenuScene()); // Set the scene to the Main Menu of the Blackjack game.
-        });
-
-        BJMainSc.backToMainMenu().setOnAction(e -> { // returns back to the Main Menu of the GameManager from the Blackjack scene
-         this.getPrimaryStage().setScene(this.getMainScreen());
         });
 
     	logout.setOnAction(e -> { // If the user has selected "Logout" button,

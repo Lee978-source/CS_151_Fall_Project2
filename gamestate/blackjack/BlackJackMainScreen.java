@@ -6,6 +6,7 @@
 
 package gamestate.blackjack;
 
+import gamestate.GameManager;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -29,13 +30,15 @@ public class BlackJackMainScreen {
     private Scene mainMenuScene;
     private Scene gameScene;
     private BlackJackEngine engine;
-    private Button backButton; // new
+    private Button backButton;
+    private GameManager gameManager;
     // User interface for game screen
 
 
-    public BlackJackMainScreen(Stage primaryStage, String username) {
+    public BlackJackMainScreen(Stage primaryStage, String username, GameManager gameManager) {
         this.primaryStage = primaryStage;
         this.username = username;
+        this.gameManager = gameManager;
     }
 
     public void createMainMenuScene() {
@@ -45,30 +48,24 @@ public class BlackJackMainScreen {
         Button newGameButton = new Button("Start New Game");
         newGameButton.setPrefWidth(200);
         newGameButton.setOnAction(e -> {
-            BlackJackGamePane gamePane = new BlackJackGamePane(primaryStage, username);
+            BlackJackGamePane gamePane = new BlackJackGamePane(primaryStage, username, this);
             Scene gameScene = gamePane.createGameScene();
             primaryStage.setScene(gameScene);
         });
 
         this.backButton = new Button("Back to Main Menu");
         backButton.setPrefWidth(200);
-        // backButton.setOnAction(e -> returnToMainMenu()); remove
+
+        backButton.setOnAction(e -> {
+            primaryStage.setScene(this.gameManager.getMainScreen());
+        });
 
         VBox layout = new VBox(20, titleLabel, newGameButton, backButton);
         layout.setAlignment(Pos.CENTER);
 
-
         this.mainMenuScene = new Scene(layout, 800, 600);
     }
 
-/*
-    private void startNewGame() {
-        this.engine = new BlackJackEngine(1000);
-        createGameScene();
-        primaryStage.setScene(gameScene);
-        primaryStage.setTitle("Blackjack - " + username);
-    }
-*/
     private void createGameScene() {
         BorderPane root = new BorderPane();
         //Grid showing all players
