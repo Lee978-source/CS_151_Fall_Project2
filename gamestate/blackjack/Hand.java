@@ -40,9 +40,14 @@ public class Hand {
         }
         while (handValue > 21 && aceCount > 0) {
             handValue -= 10; // converts the ace to a 1 if the ace included makes the hand value over 21
-            aceCount--;  // revert aceCount back to 0 in case another ace is drawn
+            aceCount--;  // in case another ace is drawn
         }
         return handValue;
+    }
+
+    // keep for now so program works
+    public int calculateValue() {
+        return calculateValue(false);
     }
 
     public List<Card> getCards() {

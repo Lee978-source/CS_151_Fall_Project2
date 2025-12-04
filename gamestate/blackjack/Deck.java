@@ -13,7 +13,7 @@ public class Deck {
         shuffle();
     }
 
-    private void initializeDeck() {
+    public void initializeDeck() {
         cards.clear(); // clear any cards from previous rounds
         // iterate all possible suits
         for (Card.Suit suit : Card.Suit.values()) {
