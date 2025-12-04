@@ -4,35 +4,12 @@ import java.util.*;
 public class BlackJackEngine {
     //Logic for 1 human vs 2 ai, 1 dealer
 
-    /*
-    //Stores player state
-    private static class PlayerState{
-        int handValue = 0;
-        boolean stands = false;
-        int balance = 0;
-        int bet = 0;
-    }
-    */
-
     public static final String dealer = "Dealer";
     public static final String player = "User";
     public static final String ai1 = "AI Player 1";
     public static final String ai2 = "AI Player 2";
 
     private final Random rand = new Random();
-
-    /*
-    // Players
-    private final PlayerState user = new PlayerState();
-    private final PlayerState player1 = new PlayerState();
-    private final PlayerState player2 = new PlayerState();
-
-    private int dealerHandValue = 0;
-    private boolean dealerStands = false;
-    private boolean roundOver = false;
-
-    private int lastUserNumber = 0;
-    */
 
     // game state
     private Deck deck;
@@ -97,7 +74,7 @@ public class BlackJackEngine {
             p.bet = userBet;
 
             activePlayers.add(entry.getKey());
-
+        }
             for (int i = 0; i < 2; i++) {
                 for (String playerName : activePlayers) {
                     players.get(playerName).hand.addCard(deck.drawCard());
@@ -111,17 +88,7 @@ public class BlackJackEngine {
             if (!activePlayers.isEmpty() && !activePlayers.get(0).equals(player)) {
                 runAiTurn(activePlayers.get(0));
             }
-        }
     }
-
-
-    /*
-    private void resetPlayer(PlayerState p, int bet){
-        p.handValue = 0;
-        p.stands = false;
-        p.bet = bet;
-    }
-    */
 
     /**
      * Human Action
@@ -152,15 +119,6 @@ public class BlackJackEngine {
             advanceTurn();
         }
 
-        /*
-    public void ai1Turn() {
-        runAiTurn(player1);
-    }
-
-    public void ai2Turn() {
-        runAiTurn(player2);
-    }
-*/
     public void dealerTurnAndSettle() {
         if (isRoundOver()) {
             return;
@@ -179,7 +137,9 @@ public class BlackJackEngine {
      * We want AI to hit while hand is <= 16
      */
     private void runAiTurn(String aiName){
-        if (isRoundOver()) return;
+        if (isRoundOver()) {
+            return;
+        }
 
         Player ai = players.get(aiName);
         Hand hand = ai.hand;
@@ -245,6 +205,7 @@ public class BlackJackEngine {
             }
             results.put(name, resultText);
 
+            // player results
             if (name.equals(player)) {
                 if (resultText.contains("Wins")) {
                     if (resultText.contains("Blackjack")) {
