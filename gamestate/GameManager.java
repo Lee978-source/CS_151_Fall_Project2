@@ -264,7 +264,7 @@ public class GameManager extends Application {
 
     	VBox introLayout = new VBox(10, loginButton, createButton); // Format layout for "Intro" screen.
 		introLayout.setAlignment(Pos.CENTER); // Align the UI components of the "Intro" screen to the center.
-    	this.introScreen = new Scene(introLayout, 600, 600); // Create the Scene object with the VBox-centered layout and assign it to the global introScreen variable.
+    	this.introScreen = new Scene(introLayout, 800, 600); // Create the Scene object with the VBox-centered layout and assign it to the global introScreen variable.
     }
 
     /** Create and Set the "Log In" Screen: **/
@@ -318,7 +318,7 @@ public class GameManager extends Application {
 		VBox loginLayout = new VBox(10, this.getLoginUserField(), this.getLoginPassField(), errorText, loginButton, backButton); // Format layout for "Log In" screen.
 
 		loginLayout.setAlignment(Pos.CENTER); // Align the UI components of the "Log In" screen to the center.
-		this.loginScreen = new Scene(loginLayout, 600, 600); // Create Scene object for "Log In" screen to be displayed and assign it to the global loginScreen variable.
+		this.loginScreen = new Scene(loginLayout, 800, 600); // Create Scene object for "Log In" screen to be displayed and assign it to the global loginScreen variable.
     }
 
     /** Create and Set the "Create Account" Screen: **/
@@ -387,7 +387,7 @@ public class GameManager extends Application {
 		VBox createAccLayout = new VBox(10, this.getCreateUserField(), this.getCreatePassField(), guideText, createAccButton, backButton); // Format layout for "Create Account" screen.
 
 		createAccLayout.setAlignment(Pos.CENTER); // Align the UI components of the "Create Account" screen to the center.
-		this.createAccScreen = new Scene(createAccLayout, 600, 600); // Create Scene object for "Create Account" screen to be displayed and assign it to the global createAccScreen variable.
+		this.createAccScreen = new Scene(createAccLayout, 800, 600); // Create Scene object for "Create Account" screen to be displayed and assign it to the global createAccScreen variable.
     }
 
     /** Create and Set the "Main Menu" Screen: **/
@@ -458,7 +458,7 @@ public class GameManager extends Application {
     	// Overall screen layout to hold the scoresLayout VBox and the gamesButtonsLayout VBox:
     	HBox mainLayout = new HBox(100, scoresLayout, gamesButtonsLayout); // Put components into a Horizontal Box.
     	mainLayout.setAlignment(Pos.CENTER);
-    	this.mainScreen = new Scene(mainLayout, 600, 600); // Create Scene object for this "Main Menu" screen to be displayed and assign it to the global mainScreen variable.
+    	this.mainScreen = new Scene(mainLayout, 800, 600); // Create Scene object for this "Main Menu" screen to be displayed and assign it to the global mainScreen variable.
     }
 
 

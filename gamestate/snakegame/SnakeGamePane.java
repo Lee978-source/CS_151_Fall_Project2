@@ -58,9 +58,10 @@ public class SnakeGamePane {
     public Scene createGameScene() {
         BorderPane root = new BorderPane();
 
-        root.setStyle("-fx-background-color: #1e272eff;");
+        root.setStyle("-fx-background-color: #f38fa9;");
 
-        canvas = new Canvas(600, 500);
+        canvas = new Canvas(800, 600);
+
         canvas.setFocusTraversable(true);
         gc = canvas.getGraphicsContext2D();
 
@@ -76,16 +77,17 @@ public class SnakeGamePane {
 
         scoreLabel = new Label("Score: 0");
         scoreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
-        scoreLabel.setTextFill(Color.web("#f39c12ff"));
+        scoreLabel.setTextFill(Color.web("#FFDA03"));
 
         Button quitButton = new Button("Quit");
         quitButton.setOnAction(e -> returnToSnakeMenu());
-        quitButton.setStyle("-fx-background-color: #d368d2; -fx-text-fill: white;");
+        quitButton.setStyle("-fx-background-color: #eeeeee; -fx-text-fill: black;");
         topBar.getChildren().addAll(scoreLabel,quitButton);
 
         root.setTop(topBar);
 
-        Scene scene = new Scene(root, 600, 550);
+        Scene scene = new Scene(root, 800, 600);
+
         root.requestFocus();
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.UP) {
@@ -117,7 +119,7 @@ public class SnakeGamePane {
         pauseBox.setStyle("-fx-background-color: rgba(137,226,234,0.9)");
 
         Label pauseLabel = new Label("PAUSED");
-        pauseLabel.setFont(Font.font("Trebuchet MS", FontWeight.BOLD,48));
+        pauseLabel.setFont(Font.font("Arial", FontWeight.BOLD,48));
         pauseLabel.setTextFill(Color.web("f38fa9"));
 
         Button resumeButton = new Button("RESUME");
@@ -152,18 +154,6 @@ public class SnakeGamePane {
         return pauseBox;
     }
 
-    private HBox createTopBar() {
-        HBox topBar = new HBox(20);
-        topBar.setPadding(new Insets(10));
-        topBar.setAlignment(Pos.CENTER);
-
-        scoreLabel = new Label("Score: 0");
-        scoreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
-        scoreLabel.setTextFill(Color.web("#f39c12ff"));
-        topBar.getChildren().add(scoreLabel);
-
-        return topBar;
-    }
 
     public void startGameLoop() {
         gameLoop = new AnimationTimer() {
@@ -217,11 +207,6 @@ public class SnakeGamePane {
         Point foodPos = game.getFood().getPosition(); // Get the position of the Food sprite.
         gc.fillOval(foodPos.getX() * cellSize, foodPos.getY() * cellSize, cellSize, cellSize); // Render the Food sprite as an oval.
     }
-
-    private void updateScore() {
-        scoreLabel.setText("Score: " + game.getScore());
-    }
-
 
     private void togglePauseMenu(VBox pauseMenu) {
         game.togglePause();

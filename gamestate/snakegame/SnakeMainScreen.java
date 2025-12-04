@@ -96,7 +96,7 @@ public class SnakeMainScreen {
 
         Label instructionsLabel = new Label(instructions);
         instructionsLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 18));
-        instructionsLabel.setStyle("-fx-text-fill:#2c3e50;");
+        instructionsLabel.setStyle("-fx-text-fill:#f38fa9;");
         instructionsLabel.setWrapText(true);
         instructionsLabel.setMaxWidth(600);
 
