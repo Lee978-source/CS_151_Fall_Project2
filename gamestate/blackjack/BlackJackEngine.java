@@ -1,9 +1,10 @@
 package gamestate.blackjack;
-import java.util.Random;
+import java.util.*;
 
 public class BlackJackEngine {
     //Logic for 1 human vs 2 ai, 1 dealer
 
+    /*
     //Stores player state
     private static class PlayerState{
         int handValue = 0;
@@ -11,9 +12,16 @@ public class BlackJackEngine {
         int balance = 0;
         int bet = 0;
     }
+    */
+
+    public static final String dealer = "Dealer";
+    public static final String player = "User";
+    public static final String ai1 = "AI Player 1";
+    public static final String ai2 = "AI Player 2";
 
     private final Random rand = new Random();
 
+    /*
     // Players
     private final PlayerState user = new PlayerState();
     private final PlayerState player1 = new PlayerState();
@@ -24,13 +32,41 @@ public class BlackJackEngine {
     private boolean roundOver = false;
 
     private int lastUserNumber = 0;
+    */
 
+    // game state
+    private Deck deck;
+    private final LinkedHashMap<String, Player> players;
+    private final Hand dealerHand;
+
+    private int betAmount = 0;
+    private int playerIndex = 0;
+    private boolean roundOver = false;
+    private int lastUserDelta = 0;
+    private final List<String> activePlayers;
+
+    private static class Player {
+        final Hand hand = new Hand();
+        int balance;
+        int bet;
+        boolean hasStood = false;
+
+        Player(int startBalance) {
+            this.balance = startBalance;
+        }
+    }
     /**Everyone has the same starting balance **/
     public BlackJackEngine(int startingBalance){
-        user.balance = startingBalance;
-        player1.balance = startingBalance;
-        player2.balance = startingBalance;
+        this.deck = new Deck();
+        this.dealerHand = new Hand();
 
+        // initialize players in turn order
+        this.players = new LinkedHashMap<>();
+        players.put(player, new Player(startingBalance));
+        players.put(ai1, new Player(startingBalance));
+        players.put(ai2, new Player(startingBalance));
+
+        this.activePlayers = new ArrayList<>(players.keySet());
     }
 
     // --------- round duration ------------
@@ -40,94 +76,83 @@ public class BlackJackEngine {
      */
 
     public void startNewRound(int userBet) {
-        if (userBet <= 0) throw new IllegalArgumentException("Bet must be positive");
-        if (userBet > user.balance) throw new IllegalArgumentException("Bet cannot exceed user balance");
-
-        // you can later make AI bets different if you want
-        if (userBet > player1.balance || userBet > player2.balance) {
-            throw new IllegalArgumentException("One of the AI players cannot afford this bet");
+        if (userBet <= 0) {
+            throw new IllegalArgumentException("Bet must be positive");
         }
+        this.betAmount = userBet;
+        lastUserDelta = 0;
 
-        //reset the flags
+        deck.initializeDeck();
+        deck.shuffle();
+        dealerHand.clear();
         roundOver = false;
-        dealerStands = false;
-        lastUserNumber = 0;
 
-        resetPlayer(user, userBet);
-        resetPlayer(player1, userBet);
-        resetPlayer(player2, userBet);
+        activePlayers.clear();
 
-        dealerHandValue = drawCard() + drawCard();
+        // using a map helps manage the turns for the player and AI's
+        for (Map.Entry<String, Player> entry : players.entrySet()) {
+            Player p = entry.getValue();
+            p.hand.clear();
+            p.hasStood = false;
+            p.bet = userBet;
 
-        // initial deal
-        user.handValue = drawCard() + drawCard();
-        player1.handValue  = drawCard() + drawCard();
-        player2.handValue  = drawCard() + drawCard();
+            activePlayers.add(entry.getKey());
 
-        // basic initial blackjack check (only for user vs dealer for now)
-        checkUserBlackjackOnDeal();
-
+            for (int i = 0; i < 2; i++) {
+                for (String playerName : activePlayers) {
+                    players.get(playerName).hand.addCard(deck.drawCard());
+                }
+                dealerHand.addCard(deck.drawCard());
+            }
+            playerIndex = 0;
+            if (roundOver) {
+                return;
+            }
+            if (!activePlayers.isEmpty() && !activePlayers.get(0).equals(player)) {
+                runAiTurn(activePlayers.get(0));
+            }
+        }
     }
 
+
+    /*
     private void resetPlayer(PlayerState p, int bet){
         p.handValue = 0;
         p.stands = false;
         p.bet = bet;
     }
+    */
 
     /**
      * Human Action
      */
 
     //User hits. Returns hand total
-    public int userHit(){
-        if (roundOver || user.stands) {
-            return user.handValue;
+    public Card userHit(){
+        if (isRoundOver() || !player.equals(getCurrentPlayer())) {
+            return null;
         }
 
-        user.handValue += drawCard();
+        Player user = players.get(player);
+        Card newCard = deck.drawCard();
+        user.hand.addCard(newCard);
 
-        runAiTurn(player1);   // hits while < 16, then stands
-        runAiTurn(player2);
-
-        //dealer "auto plays
-        if (!dealerStands && dealerHandValue < 17) {
-            dealerHandValue += drawCard();
-            if (dealerHandValue >= 17) {
-                dealerStands = true;
-            }
+        if (user.hand.calculateValue() >= 21) {
+            user.hasStood = true;
+            advanceTurn();
         }
-
-        //if you hit 21, automatically end
-        if (user.handValue == 21 || dealerHandValue > 21 ) {
-            user.stands = true;
-
-
-
-            settleRound();
-            return user.handValue;
-        }
-
-        checkUserBust();
-        return user.handValue;
-
-        /**
-         * User stands, AIs and dealer finish drawing
-         */
-
-
+        return newCard;
     }
 
     public void userStand(){
-        if (roundOver || user.stands) {
+        if (isRoundOver() || !player.equals(getCurrentPlayer())) {
             return;
         }
+            players.get(player).hasStood = true;
+            advanceTurn();
+        }
 
-        user.stands = true;
-
-
-    }
-
+        /*
     public void ai1Turn() {
         runAiTurn(player1);
     }
@@ -135,190 +160,154 @@ public class BlackJackEngine {
     public void ai2Turn() {
         runAiTurn(player2);
     }
-
+*/
     public void dealerTurnAndSettle() {
-        // Dealer turn: hit on <= 17
-        while (dealerHandValue <= 17) {
-            dealerHandValue += drawCard();
+        if (isRoundOver()) {
+            return;
         }
-        dealerStands = true;
 
-        // settle all three vs dealer
+        while (dealerHand.calculateValue() < 17) {
+            dealerHand.addCard(deck.drawCard());
+        }
+
         settleRound();
+        roundOver = true;
     }
 
     /**
      * AI Logic
-     * We want AI to hit while hand is < 16
+     * We want AI to hit while hand is <= 16
      */
-    private void runAiTurn(PlayerState ai){
-        if(roundOver) return;
+    private void runAiTurn(String aiName){
+        if (isRoundOver()) return;
 
-        while (ai.handValue < 16){
-            ai.handValue += drawCard();
-            if(ai.handValue > 21){
-                //this is a bust
-                break;
-            }
+        Player ai = players.get(aiName);
+        Hand hand = ai.hand;
+
+        while (hand.calculateValue() < 17) {
+            hand.addCard(deck.drawCard());
         }
-        ai.stands = true;
-    }
-    // Internal helper
-    private int drawCard() {
-        // 2-11 inclusive (treat 11 as Ace)
-        return rand.nextInt(10) + 2;
+        ai.hasStood = true;
+        advanceTurn();
     }
 
-    private void checkUserBlackjackOnDeal() {
-        if (roundOver) return;
+    public String advanceTurn() {
+        playerIndex++;
 
-        boolean userBJ   = (user.handValue == 21);
-        boolean dealerBJ = (dealerHandValue == 21);
+        while (playerIndex < activePlayers.size()) {
+            String nextPlayerName = activePlayers.get(playerIndex);
+            Player nextPlayer = players.get(nextPlayerName);
 
-        if (userBJ || dealerBJ) {
-            if (userBJ && !dealerBJ) {
-                win(user);
-                lastUserNumber = user.bet;
-            } else if (!userBJ && dealerBJ) {
-                lose(user);
-                lastUserNumber = -user.bet;
+            if (!nextPlayer.hasStood && nextPlayer.hand.calculateValue() < 21) {
+                if (nextPlayerName.equals(player)) {
+                    return player;
+                } else {
+                    runAiTurn(nextPlayerName);
+                    return getCurrentPlayer();
+                }
+            }
+            playerIndex++;
+        }
+        dealerTurnAndSettle();
+        return "Round End";
+    }
+
+    // finished the round by looking at each player status
+    private Map<String, String> settleRound() {
+        Map<String, String> results = new LinkedHashMap<>();
+        int dealerScore = dealerHand.calculateValue();
+        boolean dealerBust = dealerScore > 21;
+
+        for (String name : players.keySet()) {
+            Player p = players.get(name);
+            int playerScore = p.hand.calculateValue();
+            String resultText;
+
+            // bust if hand is higher than 21
+            boolean playerBust = playerScore > 21;
+
+            if (p.hand.isBlackjack()) {
+                resultText = "Blackjack! Wins $" + (p.bet * 1.5);
+            } else if (playerBust) {
+                p.balance -= p.bet;
+                resultText = "Bust! Loses $" + p.bet;
+            } else if (dealerBust) {
+                p.balance += p.bet;
+                resultText = "Dealer bust! Wins $" + p.bet;
+            } else if (playerScore > dealerScore) {
+                p.balance += p.bet;
+                resultText = "Win! Wins $" + p.bet;
+            } else if (playerScore < dealerScore) {
+                p.balance -= p.bet;
+                resultText = "Lose! Loses $" + p.bet;
             } else {
-                push(user);
-                lastUserNumber = 0;
+                resultText = "Push! Bet returned.";
             }
-            roundOver = true;
-        }
-    }
+            results.put(name, resultText);
 
-    private void checkUserBust() {
-        if (user.handValue > 21) {
-            lose(user);
-            lastUserNumber = -user.bet;
-            roundOver = true;
-        }
-
-        // If player hits exactly 21, auto-stand and finish the round
-        if (user.handValue == 21 && !roundOver) {
-            user.stands = true;
-
-            // Let both AIs finish their turns
-            runAiTurn(player1);
-            runAiTurn(player2);
-
-            // Dealer: hit on <= 17, then stand
-            while (dealerHandValue <= 17) {
-                dealerHandValue += drawCard();
+            if (name.equals(player)) {
+                if (resultText.contains("Wins")) {
+                    if (resultText.contains("Blackjack")) {
+                        lastUserDelta = (int)(p.bet * 1.5);
+                    } else {
+                        lastUserDelta = p.bet;
+                    }
+                } else if (resultText.contains("Loses")) {
+                    lastUserDelta = -p.bet;
+                } else {
+                    lastUserDelta = 0;
+                }
             }
-            dealerStands = true;
-
-            // Now compare everyone vs dealer
-            settleRound();
         }
-    }
-
-    /**
-     * After everyone is done, compare each non-dealer player vs dealer
-     * and update balances.
-     */
-    private void settleRound() {
-        if (roundOver) {
-            return;
-        }
-
-        settleOnePlayer(user);
-        settleOnePlayer(player1);
-        settleOnePlayer(player2);
-
-
-        roundOver = true;
-    }
-
-    private void settleOnePlayer(PlayerState p) {
-        if (p.handValue > 21) {
-            // bust – auto lose
-            lose(p);
-            if (p == user) {
-                lastUserNumber = -p.bet;
-                return;
-            }
-
-        }
-
-        if (dealerHandValue > 21) {
-            win(p);
-            if (p == user) lastUserNumber = p.bet;
-        } else if (p.handValue > dealerHandValue) {
-            win(p);
-            if (p == user){
-                lastUserNumber = p.bet;
-            }
-        } else if (p.handValue < dealerHandValue) {
-            lose(p);
-            if (p == user){
-                lastUserNumber = -p.bet;
-            }
-        } else {
-            win(p);
-            if (p == user) lastUserNumber = p.bet;
-        }
-    }
-
-    private void win(PlayerState p) {
-        p.balance += p.bet;
-    }
-
-    private void lose(PlayerState p) {
-        p.balance -= p.bet;
-    }
-
-    private void push(PlayerState p) {
-        // nothing changes
+        return results;
     }
 
     // ---------- getters for UI/debug ----------
 
-    public int getUserHandValue()   {
+    public Hand getHand(String playerName) {
+        if (playerName.equals(dealer)) {
+            return dealerHand;
+        }
+        Player p = players.get(playerName);
 
-        return user.handValue;
-    }
-    public int getAi1HandValue()    {
-
-        return player1.handValue;
-    }
-    public int getAi2HandValue()    {
-
-        return player2.handValue;
-    }
-    public int getDealerHandValue() {
-
-        return dealerHandValue;
+        if (p != null) {
+            return p.hand;
+        } else {
+            return new Hand();
+        }
     }
 
-    public int getUserBalance() {
+    public int getBalance(String playerName) {
+        Player p = players.get(playerName);
 
-        return user.balance;
-    }
-    public int getAi1Balance()  {
-
-        return player1.balance;
-    }
-    public int getAi2Balance()  {
-
-        return player2.balance;
+        if (p != null) {
+            return p.balance;
+        } else {
+            return 0;
+        }
     }
 
-    public int getUserBet() {
+    public String getCurrentPlayer() {
+        if (isRoundOver() || playerIndex >= activePlayers.size()) {
+            return "Round End!";
+        }
+        return activePlayers.get(playerIndex);
+    }
 
-        return user.bet;
+    public int getDealerVisibleScore() {
+        if (dealerHand.getCards().size() < 2) {
+            return 0;
+        }
+        return dealerHand.calculateValue(true);
     }
 
     public int getLastUserDelta() {
-
-        return lastUserNumber;
+        return lastUserDelta;
     }
 
     public boolean isRoundOver() {
-        return roundOver; }
+        return roundOver;
+    }
 
 }
 
