@@ -122,14 +122,9 @@ public class SnakeGamePane {
         pauseLabel.setFont(Font.font("Arial", FontWeight.BOLD,48));
         pauseLabel.setTextFill(Color.web("FFDA03"));
 
-        Button resumeButton = new Button("RESUME");
-        styleButton(resumeButton, "#f38fa9");
-        resumeButton.setOnAction(e -> {
-            game.togglePause();
-            paused = game.isPaused();
-            pauseBox.setVisible(false);
-            canvas.requestFocus();
-        });
+        Label resumeNotification = new Label("Please click ESCAPE to resume the game!");
+        resumeNotification.setFont(Font.font("Arial", FontWeight.BOLD,24));
+        resumeNotification.setTextFill(Color.web("FFDA03"));
 
         Button restartButton = new Button("RESTART");
         styleButton(restartButton, "#f38fa9");
@@ -145,7 +140,7 @@ public class SnakeGamePane {
 
         pauseBox.getChildren().addAll(
                 pauseLabel,
-                resumeButton,
+                resumeNotification,
                 restartButton,
                 snakeMenuButton,
                 mainMenuButton
