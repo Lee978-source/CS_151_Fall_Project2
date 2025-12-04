@@ -147,6 +147,7 @@ public class Snake {
     }
 
     public void togglePause() {
+
         paused = !paused;
     }
 
