@@ -57,6 +57,7 @@ public class Card {
         }
     }
 
+
     // gets the name of the png names, ex. 2C = 2 of clubs
     public String getFileName() {
         return this.rank.getSymbol() + this.suit.getLetter() + ".png";

@@ -50,6 +50,11 @@ public class Hand {
         return calculateValue(false);
     }
 
+    // checks if hand is blackjack (Ace + Face Card or 10)
+    public boolean isBlackjack() {
+        return cards.size() == 2 && calculateValue() == 21;
+    }
+
     public List<Card> getCards() {
         return cards;
     }
