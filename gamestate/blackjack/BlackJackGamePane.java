@@ -1,6 +1,8 @@
 package gamestate.blackjack;
 
+// Keep the import for the user's existing GameManager, but won't use it for Blackjack persistence
 import gamestate.GameManager;
+
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -14,12 +16,19 @@ import javafx.scene.image.ImageView;
 import javafx.scene.control.TextField;
 import javafx.geometry.Insets;
 import java.util.List;
+// for file I/O
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class BlackJackGamePane {
     private final Stage primaryStage;
     private final String username;
     private final BlackJackEngine engine;
-    private final GameManager gameManager;
+
+    private static final String SAVE_FILE_NAME = "blackjack_save_state.json";
 
     private static final int CARD_WIDTH = 70;
     private static final int MIN_BET = 50; // min bet
@@ -38,30 +47,30 @@ public class BlackJackGamePane {
     private HBox ai1CardBox;
     private HBox ai2CardBox;
 
-    //main menu
-    private Button backButton;
-
     // betting interface
     private HBox bettingInputPanel;
     private TextField betAmountField;
     private Button placeBetButton;
 
-    private Button BackButton;
     private Button hitButton;
     private Button standButton;
     private Button nextRoundButton;
+
+    // save/load buttons
+    private Button saveButton;
+    private Button loadButton;
+
     private BlackJackMainScreen mainScreen;
 
-    public BlackJackGamePane(Stage primaryStage, String username, BlackJackMainScreen mainScreen, GameManager gameManager) {
+    public BlackJackGamePane(Stage primaryStage, String username, BlackJackMainScreen mainScreen) {
         this.primaryStage = primaryStage;
         this.username = username;
         this.mainScreen = mainScreen;
-        this.gameManager = gameManager;
         // Start balance: 1000
         this.engine = new BlackJackEngine(1000);
     }
 
-    /** Builds and returns the Blackjack "game" scene (placeholder for now) */
+    /** Builds and returns the Blackjack "game" scene */
     public Scene createGameScene() {
 
         BorderPane root = new BorderPane();
@@ -115,38 +124,36 @@ public class BlackJackGamePane {
         String whiteButtonStyle = "-fx-background-color: white; -fx-text-fill: black; -fx-padding: 8 16; -fx-font-weight: bold; -fx-border-color: black; -fx-border-width: 1;";
 
         Button backBtn = new Button("Back to Blackjack Menu");
-        Button mainBackButton = new Button("Back to Main Menu");
 
         backBtn.setStyle(whiteButtonStyle);
         backBtn.setOnAction(e -> {
             this.primaryStage.setScene(this.mainScreen.getMainMenuScene());
         });
 
-        mainBackButton.setStyle(whiteButtonStyle);
-        mainBackButton.setOnAction(e -> {
-            System.out.println("Back to Main Menu button clicked!");
-            System.out.println("gameManager: " + this.gameManager);
-            System.out.println("mainScreen: " + this.gameManager.getMainScreen());
-            this.primaryStage.setScene(this.gameManager.getMainScreen());
-            System.out.println("Scene changed!");
-        });
-
         hitButton = new Button("Hit");
         standButton = new Button("Stand");
         nextRoundButton = new Button("New Round");
+
+        // initialize button
+        saveButton = new Button("Save Game");
+        loadButton = new Button("Load Game");
 
         // white buttons style
         hitButton.setStyle(whiteButtonStyle);
         standButton.setStyle(whiteButtonStyle);
         nextRoundButton.setStyle(whiteButtonStyle);
+        saveButton.setStyle(whiteButtonStyle); // Style persistence buttons
+        loadButton.setStyle(whiteButtonStyle);
 
         bettingInputPanel = createBettingInputPanel();
 
-        HBox buttonRow = new HBox(15, hitButton, standButton, nextRoundButton);
-        buttonRow.setAlignment(Pos.CENTER);
+        HBox gameControlsRow = new HBox(15, hitButton, standButton, nextRoundButton);
+        gameControlsRow.setAlignment(Pos.CENTER);
 
+        HBox persistenceRow = new HBox(15, saveButton, loadButton);
+        persistenceRow.setAlignment(Pos.CENTER);
 
-        VBox bottomBox = new VBox(15, balanceLabel, bettingInputPanel, buttonRow, backBtn, mainBackButton);
+        VBox bottomBox = new VBox(15, balanceLabel, bettingInputPanel, gameControlsRow, persistenceRow, backBtn);
         bottomBox.setAlignment(Pos.CENTER);
         root.setBottom(bottomBox);
 
@@ -158,7 +165,7 @@ public class BlackJackGamePane {
             if (engine.isRoundOver()) {
                 setControls(false, false, true);
             } else if (!engine.getCurrentPlayer().equals(BlackJackEngine.player)) {
-                setControls(false, false, false);
+                setControls(false, false, true);
             }
         });
 
@@ -170,6 +177,9 @@ public class BlackJackGamePane {
 
         nextRoundButton.setOnAction(e -> startBettingPhase());
         placeBetButton.setOnAction(e -> handlePlaceBet());
+
+        saveButton.setOnAction(e -> handleSaveGame());
+        loadButton.setOnAction(e -> handleLoadGame());
 
         // initial game state
         startBettingPhase();
@@ -221,6 +231,74 @@ public class BlackJackGamePane {
         }
     }
 
+    // methods for GSON
+    // saves the game state JSON string
+    private static boolean saveGameToFile(String jsonState) {
+        try (FileWriter file = new FileWriter(SAVE_FILE_NAME)) {
+            file.write(jsonState);
+            file.flush();
+            return true;
+        } catch (IOException e) {
+            System.err.println("Error saving game state: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // loads the game state JSON string
+    private static String loadGameFromFile() {
+        try {
+            File file = new File(SAVE_FILE_NAME);
+            if (!file.exists()) {
+                System.out.println("No save file found.");
+                return null;
+            }
+            // reads the content from the file
+            return Files.readString(Paths.get(SAVE_FILE_NAME));
+        } catch (IOException e) {
+            System.err.println("Error loading game state: " + e.getMessage());
+            return null;
+        }
+    }
+
+    // handler for Save button
+    private void handleSaveGame() {
+        String savedJson = engine.saveState();
+
+        boolean success = saveGameToFile(savedJson);
+
+        if (success) {
+            statusLabel.setText("Game state saved successfully!");
+        } else {
+            statusLabel.setText("Error: Could not save game state.");
+        }
+    }
+
+    // handler for Load button
+    private void handleLoadGame() {
+        String loadedJson = loadGameFromFile();
+
+        if (loadedJson != null) {
+            engine.loadState(loadedJson);
+
+            refreshLabels();
+
+            if (engine.isRoundOver()) {
+                setControls(false, false, true);
+                statusLabel.setText("Game loaded! Round finished. Press 'New Round' to continue.");
+            } else if (engine.getCurrentPlayer().equals(BlackJackEngine.player)) {
+                setControls(true, false, false);
+                statusLabel.setText("Game loaded! It is your turn. Hit or Stand?");
+            } else {
+                setControls(false, false, true);
+                statusLabel.setText("Game loaded! Press 'New Round' to continue.");
+            }
+
+        } else {
+            statusLabel.setText("Error: Could not load save data.");
+        }
+    }
+
+
     // helper methods to set game state
     private void setControls(boolean hitStandEnabled, boolean bettingEnabled, boolean nextRoundEnabled) {
         hitButton.setDisable(!hitStandEnabled);
@@ -229,6 +307,9 @@ public class BlackJackGamePane {
 
         bettingInputPanel.setVisible(bettingEnabled);
         bettingInputPanel.setManaged(bettingEnabled);
+
+        saveButton.setDisable(false);
+        loadButton.setDisable(false);
     }
 
 
@@ -318,7 +399,7 @@ public class BlackJackGamePane {
         displayHand(ai2CardBox, ai2Hand, false);
 
         if (engine.isRoundOver()) {
-            dealerScoreLabel.setText("Hand Total: " + engine.getHand(BlackJackEngine.dealer).calculateValue());
+            dealerScoreLabel.setText("Dealer Total: " + engine.getHand(BlackJackEngine.dealer).calculateValue());
             displayHand(dealerCardBox, engine.getHand(BlackJackEngine.dealer), false);
 
             int delta = engine.getLastUserDelta();
@@ -329,7 +410,7 @@ public class BlackJackGamePane {
             } else if (delta < 0) {
                 resultText = "Lose! (-$" + Math.abs(delta) + ")";
             } else {
-                resultText = "Push!";
+                resultText = "Push! Bet is returned";
             }
 
             statusLabel.setText("Round Over! Your Result: " + resultText);
@@ -347,8 +428,7 @@ public class BlackJackGamePane {
                 setControls(true, false, false);
             }
         }
-        // updates the balance after the round is complete
+        // updates the balance after the round is complete (or whenever refreshed)
         balanceLabel.setText("Balance (" + username + "): $" + engine.getBalance(BlackJackEngine.player));
     }
-
 }

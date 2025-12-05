@@ -1,5 +1,8 @@
 package gamestate.blackjack;
 import java.util.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 public class BlackJackEngine {
     //Logic for 1 human vs 2 ai, 1 dealer
@@ -10,11 +13,11 @@ public class BlackJackEngine {
     public static final String ai2 = "AI Player 2";
 
     private final Random rand = new Random();
-
+    private final Gson gson; // for save state
     // game state
     private Deck deck;
     private final LinkedHashMap<String, Player> players;
-    private final Hand dealerHand;
+    private Hand dealerHand;
 
     private int betAmount = 0;
     private int playerIndex = 0;
@@ -23,7 +26,7 @@ public class BlackJackEngine {
     private final List<String> activePlayers;
 
     private static class Player {
-        final Hand hand = new Hand();
+        Hand hand = new Hand();
         int balance;
         int bet;
         boolean hasStood = false;
@@ -32,10 +35,13 @@ public class BlackJackEngine {
             this.balance = startBalance;
         }
     }
+
     /**Everyone has the same starting balance **/
     public BlackJackEngine(int startingBalance){
+        this.gson = new GsonBuilder().setPrettyPrinting().create();
         this.deck = new Deck();
         this.dealerHand = new Hand();
+
 
         // initialize players in turn order
         this.players = new LinkedHashMap<>();
@@ -44,6 +50,71 @@ public class BlackJackEngine {
         players.put(ai2, new Player(startingBalance));
 
         this.activePlayers = new ArrayList<>(players.keySet());
+    }
+
+    // gson methods
+    public String saveState() {
+        LinkedHashMap<String, GameState.PlayerState> gsPlayerStates = new LinkedHashMap<>();
+        for (Map.Entry<String, Player> entry : players.entrySet()) {
+            Player p = entry.getValue();
+            gsPlayerStates.put(entry.getKey(),
+                    new GameState.PlayerState(p.hand, p.balance, p.bet, p.hasStood));
+        }
+
+        GameState gameState = new GameState(
+                playerIndex,
+                betAmount,
+                roundOver,
+                lastUserDelta,
+                dealerHand,
+                gsPlayerStates,
+                deck
+        );
+
+        return gson.toJson(gameState);
+    }
+
+    public void loadState(String savedState) {
+        if (savedState == null || savedState.isEmpty()) {
+            System.out.println("No saved state to load. :(");
+            return;
+        }
+
+        try {
+            GameState loadedState = gson.fromJson(savedState, GameState.class);
+
+            this.playerIndex = loadedState.currentPlayerIndex;
+            this.betAmount = loadedState.betAmount;
+            this.roundOver = loadedState.roundOver;
+            this.lastUserDelta = loadedState.lastUserDelta;
+
+            this.dealerHand = loadedState.dealerHand;
+            this.deck = loadedState.deck;
+            this.players.clear();
+            this.activePlayers.clear();
+
+            for (Map.Entry<String, GameState.PlayerState> entry : loadedState.playerStates.entrySet()) {
+                String name = entry.getKey();
+                GameState.PlayerState ps = entry.getValue();
+
+                Player p = new Player(ps.balance);
+
+                p.hand = ps.hand;
+                p.balance = ps.balance;
+                p.hasStood = ps.hasStood;
+
+                this.players.put(name, p);
+            }
+            this.activePlayers.addAll(this.players.keySet());
+
+            System.out.println("Game state loaded successfully!!!");
+
+        } catch (JsonSyntaxException e) {
+            System.err.println("Error parsing JSON state: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Unexpected error loading game state: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // --------- round duration ------------
@@ -77,19 +148,26 @@ public class BlackJackEngine {
 
             activePlayers.add(entry.getKey());
         }
-            for (int i = 0; i < 2; i++) {
-                for (String playerName : activePlayers) {
-                    players.get(playerName).hand.addCard(deck.drawCard());
-                }
-                dealerHand.addCard(deck.drawCard());
+        for (int i = 0; i < 2; i++) {
+            for (String playerName : activePlayers) {
+                players.get(playerName).hand.addCard(deck.drawCard());
             }
-            playerIndex = 0;
-            if (roundOver) {
-                return;
-            }
-            if (!activePlayers.isEmpty() && !activePlayers.get(0).equals(player)) {
-                runAiTurn(activePlayers.get(0));
-            }
+            dealerHand.addCard(deck.drawCard());
+        }
+        // if player gets blackjack for 1st two cards, stand
+        Player user = players.get(player);
+        if (user.hand.calculateValue() == 21) {
+            user.hasStood = true;
+            dealerTurnAndSettle();
+            return;
+        }
+        playerIndex = 0;
+        if (roundOver) {
+            return;
+        }
+        if (!activePlayers.isEmpty() && !activePlayers.get(0).equals(player)) {
+            runAiTurn(activePlayers.get(0));
+        }
     }
 
     /**
@@ -117,9 +195,9 @@ public class BlackJackEngine {
         if (isRoundOver() || !player.equals(getCurrentPlayer())) {
             return;
         }
-            players.get(player).hasStood = true;
-            advanceTurn();
-        }
+        players.get(player).hasStood = true;
+        advanceTurn();
+    }
 
     public void dealerTurnAndSettle() {
         if (isRoundOver()) {
