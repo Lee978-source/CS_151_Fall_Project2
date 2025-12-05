@@ -1,5 +1,5 @@
 /**
- * @author [Phuong Hua] 
+ * @author [Phuong Hua, Ethan Le]
  * @version 1.0
  * CS151 Fall 2025 - Project 2
  */
@@ -60,10 +60,15 @@ public class SnakeGamePane {
 
         root.setStyle("-fx-background-color: #f38fa9;");
 
-        canvas = new Canvas(800, 600);
+        canvas = new Canvas(750, 500);
 
         canvas.setFocusTraversable(true);
         gc = canvas.getGraphicsContext2D();
+
+        BorderPane borders = new BorderPane(canvas); // Create BorderPane to wrap around the gameboard.
+        borders.setStyle("-fx-border-color: #f38fa9;" + // Border color is Pink.
+                "-fx-border-width: 10;" +   // Border width is 10 pixels.
+                "-fx-background-color: #1e272eff;"); // Gameboard color is Black.
 
        VBox pauseMenu = createPauseMenu();
         pauseMenu.setVisible(false);
