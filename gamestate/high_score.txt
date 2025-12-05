@@ -6,8 +6,9 @@ username,BJ,5
 Lordin Yi,BJ,3
 
 hello,SNAKE,25
-Lloyd Garmadon123,SNAKE,10
-Lloyd Garmadon123,SNAKE,10
-Lloyd Garmadon123,SNAKE,0
-Lloyd Garmadon123,SNAKE,0
-Lloyd Garmadon123,SNAKE,0
+Lloyd Garmadon123,SNAKE,340
+Lordin Yi,SNAKE,0
+Lordin Yi,SNAKE,0
+Lordin Yi,SNAKE,0
+Lordin Yi,SNAKE,10
+Lordin Yi,SNAKE,0

@@ -1,5 +1,5 @@
 /** 
- * @author [Phuong Hua] 
+ * @author [Phuong Hua, Ethan Le]
  * @version 1.0
  * CS151 Fall 2025 - Project 2
  */
@@ -19,17 +19,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
-import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-
-
 public class Snake {
-    private static final int GRID_WIDTH = 24;
-    private static final int GRID_HEIGHT = 20;
+    private static final int GRID_WIDTH = 750 / SnakeGamePane.getCellSize(); // Canvas size (width) from SnakeGamePane.java divided by cellSize (25 pixels).
+    private static final int GRID_HEIGHT = 500 / SnakeGamePane.getCellSize(); // Canvas size (height) from SnakeGamePane.java divided by cellSize (25 pixels).
     private static final int POINTS_PER_FOOD = 10;
     private final LinkedList<Point> snake = new LinkedList<>(); // Global List to hold all of the Snake's parts (each segment defined by their Positions).
     private Direction currentDirection = Direction.RIGHT; // Set the initial starting direction of the Snake.

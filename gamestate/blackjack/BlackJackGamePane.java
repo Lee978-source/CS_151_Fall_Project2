@@ -19,6 +19,7 @@ public class BlackJackGamePane {
     private final Stage primaryStage;
     private final String username;
     private final BlackJackEngine engine;
+    private final GameManager gameManager;
 
     private static final int CARD_WIDTH = 70;
     private static final int MIN_BET = 50; // min bet
@@ -37,21 +38,25 @@ public class BlackJackGamePane {
     private HBox ai1CardBox;
     private HBox ai2CardBox;
 
+    //main menu
+    private Button backButton;
+
     // betting interface
     private HBox bettingInputPanel;
     private TextField betAmountField;
     private Button placeBetButton;
 
+    private Button BackButton;
     private Button hitButton;
     private Button standButton;
     private Button nextRoundButton;
-    private GameManager gameManager;
     private BlackJackMainScreen mainScreen;
 
-    public BlackJackGamePane(Stage primaryStage, String username, BlackJackMainScreen mainScreen) {
+    public BlackJackGamePane(Stage primaryStage, String username, BlackJackMainScreen mainScreen, GameManager gameManager) {
         this.primaryStage = primaryStage;
         this.username = username;
         this.mainScreen = mainScreen;
+        this.gameManager = gameManager;
         // Start balance: 1000
         this.engine = new BlackJackEngine(1000);
     }
@@ -110,10 +115,20 @@ public class BlackJackGamePane {
         String whiteButtonStyle = "-fx-background-color: white; -fx-text-fill: black; -fx-padding: 8 16; -fx-font-weight: bold; -fx-border-color: black; -fx-border-width: 1;";
 
         Button backBtn = new Button("Back to Blackjack Menu");
+        Button mainBackButton = new Button("Back to Main Menu");
 
         backBtn.setStyle(whiteButtonStyle);
         backBtn.setOnAction(e -> {
             this.primaryStage.setScene(this.mainScreen.getMainMenuScene());
+        });
+
+        mainBackButton.setStyle(whiteButtonStyle);
+        mainBackButton.setOnAction(e -> {
+            System.out.println("Back to Main Menu button clicked!");
+            System.out.println("gameManager: " + this.gameManager);
+            System.out.println("mainScreen: " + this.gameManager.getMainScreen());
+            this.primaryStage.setScene(this.gameManager.getMainScreen());
+            System.out.println("Scene changed!");
         });
 
         hitButton = new Button("Hit");
@@ -130,7 +145,8 @@ public class BlackJackGamePane {
         HBox buttonRow = new HBox(15, hitButton, standButton, nextRoundButton);
         buttonRow.setAlignment(Pos.CENTER);
 
-        VBox bottomBox = new VBox(15, balanceLabel, bettingInputPanel, buttonRow, backBtn);
+
+        VBox bottomBox = new VBox(15, balanceLabel, bettingInputPanel, buttonRow, backBtn, mainBackButton);
         bottomBox.setAlignment(Pos.CENTER);
         root.setBottom(bottomBox);
 
@@ -334,4 +350,5 @@ public class BlackJackGamePane {
         // updates the balance after the round is complete
         balanceLabel.setText("Balance (" + username + "): $" + engine.getBalance(BlackJackEngine.player));
     }
+
 }

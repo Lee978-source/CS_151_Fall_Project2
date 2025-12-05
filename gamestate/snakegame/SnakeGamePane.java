@@ -1,5 +1,5 @@
 /**
- * @author [Phuong Hua] 
+ * @author [Phuong Hua, Ethan Le]
  * @version 1.0
  * CS151 Fall 2025 - Project 2
  */
@@ -24,6 +24,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 import java.awt.Point;
 
@@ -46,6 +48,8 @@ public class SnakeGamePane {
     private int score;
     private boolean gameOver;
 
+    private MediaPlayer snakeMusic;
+
     public SnakeGamePane(Stage primaryStage, String username, GameManager gameManager)
     {
         // To be filled in
@@ -60,10 +64,15 @@ public class SnakeGamePane {
 
         root.setStyle("-fx-background-color: #f38fa9;");
 
-        canvas = new Canvas(800, 600);
+        canvas = new Canvas(750, 500);
 
         canvas.setFocusTraversable(true);
         gc = canvas.getGraphicsContext2D();
+
+        BorderPane borders = new BorderPane(canvas); // Create BorderPane to wrap around the gameboard.
+        borders.setStyle("-fx-border-color: #f38fa9;" + // Border color is Pink.
+                "-fx-border-width: 10;" +   // Border width is 10 pixels.
+                "-fx-background-color: #1e272eff;"); // Gameboard color is Black.
 
        VBox pauseMenu = createPauseMenu();
         pauseMenu.setVisible(false);
@@ -82,7 +91,11 @@ public class SnakeGamePane {
         Button quitButton = new Button("Quit");
         quitButton.setOnAction(e -> returnToSnakeMenu());
         quitButton.setStyle("-fx-background-color: #eeeeee; -fx-text-fill: black;");
-        topBar.getChildren().addAll(scoreLabel,quitButton);
+
+        Button mainMenuButton = new Button("Back to Main Menu");
+        mainMenuButton.setOnAction(e -> returnToMainMenu());
+        mainMenuButton.setStyle("-fx-background-color: #eeeeee; -fx-text-fill: black;");
+        topBar.getChildren().addAll(scoreLabel,quitButton, mainMenuButton);
 
         root.setTop(topBar);
 
@@ -109,6 +122,8 @@ public class SnakeGamePane {
         }
         paused =false;
         this.startGameLoop();
+
+        this.cueSnakeMusic(); // Play the Snake music when the Snake game starts.
 
         return scene;
     }
@@ -273,6 +288,11 @@ public class SnakeGamePane {
         paused = false;
         lastUpdate = 0;
 
+        if (this.snakeMusic != null) // If the Snake music is still playing, stop it upon restarting so that the music can restart when reloading the game again.
+        {
+            this.snakeMusic.stop();
+        }
+
         primaryStage.setScene(createGameScene());
     }
 
@@ -280,6 +300,12 @@ public class SnakeGamePane {
         if (gameLoop != null) {
             gameLoop.stop();
         }
+
+        if (this.snakeMusic != null) // If the Snake music is still playing, stop it upon returning to the Snake Game Menu.
+        {
+            this.snakeMusic.stop();
+        }
+
         SnakeMainScreen mainScreen = new SnakeMainScreen(primaryStage, username, gameManager);
         mainScreen.createMainMenuScene();
         primaryStage.setScene(mainScreen.getMainMenuScene());
@@ -289,7 +315,30 @@ public class SnakeGamePane {
         if (gameLoop != null) {
             gameLoop.stop();
         }
+
+        if (this.snakeMusic != null) // If the Snake music is still playing, stop it upon returning to the Main Menu of the program.
+        {
+            this.snakeMusic.stop();
+        }
+
         primaryStage.setScene(gameManager.getMainScreen());
+    }
+
+    private void cueSnakeMusic()
+    {
+        // Always get rid of any existing MediaPlayers first to avoid duplicates:
+        if (this.snakeMusic != null) // If the Snake music is currently playing, stop it (so we do not accidentally have multiple copies playing when calling this method again in future runs).
+        {
+            this.snakeMusic.stop();
+            this.snakeMusic.dispose(); // Get rid of the MediaPlayer in the case we need to reset.
+        }
+
+        // Always create a new MediaPlayer to play the soundtrack:
+        Media fileMusic = new Media(getClass().getResource("/audio/snakeMusic.mp3").toString()); // Get the Snake music file as a String.
+        this.snakeMusic = new MediaPlayer(fileMusic); // Turn the string of the data of the Snake music file into playable media.
+
+        this.snakeMusic.setCycleCount(MediaPlayer.INDEFINITE); // Keep playing the music for as long until we call stop().
+        this.snakeMusic.play(); // Play the Snake music now.
     }
 
     public static int getCellSize()
