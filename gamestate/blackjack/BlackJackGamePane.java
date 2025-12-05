@@ -142,7 +142,7 @@ public class BlackJackGamePane {
         hitButton.setStyle(whiteButtonStyle);
         standButton.setStyle(whiteButtonStyle);
         nextRoundButton.setStyle(whiteButtonStyle);
-        saveButton.setStyle(whiteButtonStyle); // Style persistence buttons
+        saveButton.setStyle(whiteButtonStyle);
         loadButton.setStyle(whiteButtonStyle);
 
         bettingInputPanel = createBettingInputPanel();
@@ -150,10 +150,10 @@ public class BlackJackGamePane {
         HBox gameControlsRow = new HBox(15, hitButton, standButton, nextRoundButton);
         gameControlsRow.setAlignment(Pos.CENTER);
 
-        HBox persistenceRow = new HBox(15, saveButton, loadButton);
-        persistenceRow.setAlignment(Pos.CENTER);
+        HBox saveRow = new HBox(15, saveButton, loadButton);
+        saveRow.setAlignment(Pos.CENTER);
 
-        VBox bottomBox = new VBox(15, balanceLabel, bettingInputPanel, gameControlsRow, persistenceRow, backBtn);
+        VBox bottomBox = new VBox(15, balanceLabel, bettingInputPanel, gameControlsRow, saveRow, backBtn);
         bottomBox.setAlignment(Pos.CENTER);
         root.setBottom(bottomBox);
 
