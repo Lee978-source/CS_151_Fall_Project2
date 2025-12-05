@@ -91,7 +91,11 @@ public class SnakeGamePane {
         Button quitButton = new Button("Quit");
         quitButton.setOnAction(e -> returnToSnakeMenu());
         quitButton.setStyle("-fx-background-color: #eeeeee; -fx-text-fill: black;");
-        topBar.getChildren().addAll(scoreLabel,quitButton);
+
+        Button mainMenuButton = new Button("Back to Main Menu");
+        mainMenuButton.setOnAction(e -> returnToMainMenu());
+        mainMenuButton.setStyle("-fx-background-color: #eeeeee; -fx-text-fill: black;");
+        topBar.getChildren().addAll(scoreLabel,quitButton, mainMenuButton);
 
         root.setTop(topBar);
 

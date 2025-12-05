@@ -7,3 +7,8 @@ Lordin Yi,BJ,3
 
 hello,SNAKE,25
 Lloyd Garmadon123,SNAKE,340
+Lordin Yi,SNAKE,0
+Lordin Yi,SNAKE,0
+Lordin Yi,SNAKE,0
+Lordin Yi,SNAKE,10
+Lordin Yi,SNAKE,0
