@@ -73,6 +73,8 @@ public class BlackJackEngine {
             p.hasStood = false;
             p.bet = userBet;
 
+            p.balance -= userBet;
+
             activePlayers.add(entry.getKey());
         }
             for (int i = 0; i < 2; i++) {
@@ -148,7 +150,6 @@ public class BlackJackEngine {
             hand.addCard(deck.drawCard());
         }
         ai.hasStood = true;
-        advanceTurn();
     }
 
     public String advanceTurn() {
@@ -163,7 +164,6 @@ public class BlackJackEngine {
                     return player;
                 } else {
                     runAiTurn(nextPlayerName);
-                    return getCurrentPlayer();
                 }
             }
             playerIndex++;
@@ -171,6 +171,7 @@ public class BlackJackEngine {
         dealerTurnAndSettle();
         return "Round End";
     }
+
 
     // finished the round by looking at each player status
     private Map<String, String> settleRound() {
@@ -182,42 +183,43 @@ public class BlackJackEngine {
             Player p = players.get(name);
             int playerScore = p.hand.calculateValue();
             String resultText;
+            int payoutAmount = 0;
+
 
             // bust if hand is higher than 21
             boolean playerBust = playerScore > 21;
 
-            if (p.hand.isBlackjack()) {
-                resultText = "Blackjack! Wins $" + (p.bet * 1.5);
-            } else if (playerBust) {
-                p.balance -= p.bet;
+            if (playerBust) {
+                // bet already deducted
                 resultText = "Bust! Loses $" + p.bet;
+            } else if (p.hand.isBlackjack()) {
+                if (dealerHand.isBlackjack()) {
+                    payoutAmount = p.bet;
+                    resultText = "Push! Bet returned.";
+                } else {
+                    payoutAmount = (int) (p.bet * 2.5);
+                    resultText = "Blackjack! Wins $" + (int) (p.bet * 1.5);
+                }
             } else if (dealerBust) {
-                p.balance += p.bet;
+                payoutAmount = p.bet * 2;
                 resultText = "Dealer bust! Wins $" + p.bet;
             } else if (playerScore > dealerScore) {
-                p.balance += p.bet;
+                payoutAmount = p.bet * 2;
                 resultText = "Win! Wins $" + p.bet;
             } else if (playerScore < dealerScore) {
-                p.balance -= p.bet;
+                payoutAmount = 0;
                 resultText = "Lose! Loses $" + p.bet;
             } else {
+                payoutAmount = p.bet;
                 resultText = "Push! Bet returned.";
             }
+
+            p.balance += payoutAmount;
+
             results.put(name, resultText);
 
-            // player results
             if (name.equals(player)) {
-                if (resultText.contains("Wins")) {
-                    if (resultText.contains("Blackjack")) {
-                        lastUserDelta = (int)(p.bet * 1.5);
-                    } else {
-                        lastUserDelta = p.bet;
-                    }
-                } else if (resultText.contains("Loses")) {
-                    lastUserDelta = -p.bet;
-                } else {
-                    lastUserDelta = 0;
-                }
+                lastUserDelta = payoutAmount - p.bet;
             }
         }
         return results;
@@ -270,5 +272,8 @@ public class BlackJackEngine {
         return roundOver;
     }
 
+    public int getCurrentBet() {
+        return betAmount;
+    }
 }
 
