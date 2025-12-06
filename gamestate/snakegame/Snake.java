@@ -24,7 +24,6 @@ import java.util.LinkedList;
 public class Snake {
     private static final int GRID_WIDTH = 750 / SnakeGamePane.getCellSize(); // Canvas size (width) from SnakeGamePane.java divided by cellSize (25 pixels).
     private static final int GRID_HEIGHT = 500 / SnakeGamePane.getCellSize(); // Canvas size (height) from SnakeGamePane.java divided by cellSize (25 pixels).
-    private static final int POINTS_PER_FOOD = 10;
     private final LinkedList<Point> snake = new LinkedList<>(); // Global List to hold all of the Snake's parts (each segment defined by their Positions).
     private Direction currentDirection = Direction.RIGHT; // Set the initial starting direction of the Snake.
     private Direction newDirection = Direction.RIGHT; // Set the new direction of the Snake.
@@ -196,7 +195,6 @@ public class Snake {
 
 
     public Food getFood() { return food; }
-    public int getScore() { return score; }
     public boolean isGameOver() { return gameOver; }
     public boolean isPaused() { return paused; }
 }

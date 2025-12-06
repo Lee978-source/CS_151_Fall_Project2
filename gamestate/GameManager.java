@@ -336,46 +336,53 @@ public class GameManager extends Application {
 			String username = this.getCreateUserField().getText().strip(); // Store the entered username into a String variable.
 			String password = this.getCreatePassField().getText().strip(); // Store the entered password into a String variable.
 
-            if (password.length() >= 6)
+            if (!username.isBlank())
             {
-                for (String user : this.getUsersList()) // Make sure that no two usernames in the database are the same upon account creation.
+                if (password.length() >= 6)
                 {
-                    String[] existingUsername = user.split("\t"); // For each existing account in the database, retrieve ONLY the username through the 0th index.
-                    if (existingUsername[0].equals(username)) // Check if the new username matches the 0th index of existingUsername (the index holding an existing USERNAME).
+                    for (String user : this.getUsersList()) // Make sure that no two usernames in the database are the same upon account creation.
                     {
-                        guideText.setText("Account with the same username already exists! Choose a different username!"); // Set the guide label to state that a different username must be used to create an account.
-                        return;
+                        String[] existingUsername = user.split("\t"); // For each existing account in the database, retrieve ONLY the username through the 0th index.
+                        if (existingUsername[0].equals(username)) // Check if the new username matches the 0th index of existingUsername (the index holding an existing USERNAME).
+                        {
+                            guideText.setText("Account with the same username already exists! Choose a different username!"); // Set the guide label to state that a different username must be used to create an account.
+                            return;
+                        }
+                    }
+
+                    guideText.setText(""); // Clear the guide label (if any) upon successful account creation.
+
+                    // Try-catch block to handle potential IOException (file read/write failure):
+                    try {
+                        this.setUsersList(Files.readAllLines(this.getAccsPath())); // Read and put all existing players' username and password into the Global Accounts List (all of the lines, which are the details of the file).
+                        this.getUsersList().add(username + "\t" + password); // Store the new username and its corresponding password to the next available index in the allUsers List.
+
+                        Files.write(this.getAccsPath(), // Get the path to the location of the new/existing file we wish to create/modify.
+                                this.getUsersList(), // Retrieve the List containing the different "lines" for each player's username and their respective password.
+                                StandardOpenOption.CREATE, // Create the new user_accounts.txt file if it does not exist already.
+                                StandardOpenOption.TRUNCATE_EXISTING); // Otherwise, overwrite the existing user_accounts.txt file every time a new account is created.
+
+                        // Once the account has been validated and thus created,
+                        this.setUsername(username); // Assign the entered username as the current username being used in the program.
+                        this.setPassword(password); // Assign the entered password as the current password being used in the program.
+                        this.getPrimaryStage().setScene(this.getMainScreen()); // After validating creation of new account, open the "Main Menu" screen.
+                        this.getPrimaryStage().setTitle("Welcome, " + username + "! What game would you like to play today?"); // Change the primaryStage title to welcome the user.
+
+                    } catch (IOException e1) {
+                        System.out.println("Error reading/writing file: " + e1.getMessage()); // Print message if we get an Input/Output exception with reading/writing the .txt file.
                     }
                 }
 
-                guideText.setText(""); // Clear the guide label (if any) upon successful account creation.
-
-                // Try-catch block to handle potential IOException (file read/write failure):
-                try {
-                    this.setUsersList(Files.readAllLines(this.getAccsPath())); // Read and put all existing players' username and password into the Global Accounts List (all of the lines, which are the details of the file).
-                    this.getUsersList().add(username + "\t" + password); // Store the new username and its corresponding password to the next available index in the allUsers List.
-
-                    Files.write(this.getAccsPath(), // Get the path to the location of the new/existing file we wish to create/modify.
-                            this.getUsersList(), // Retrieve the List containing the different "lines" for each player's username and their respective password.
-                            StandardOpenOption.CREATE, // Create the new user_accounts.txt file if it does not exist already.
-                            StandardOpenOption.TRUNCATE_EXISTING); // Otherwise, overwrite the existing user_accounts.txt file every time a new account is created.
-
-                    // Once the account has been validated and thus created,
-                    this.setUsername(username); // Assign the entered username as the current username being used in the program.
-                    this.setPassword(password); // Assign the entered password as the current password being used in the program.
-                    this.getPrimaryStage().setScene(this.getMainScreen()); // After validating creation of new account, open the "Main Menu" screen.
-                    this.getPrimaryStage().setTitle("Welcome, " + username + "! What game would you like to play today?"); // Change the primaryStage title to welcome the user.
-
-                } catch (IOException e1) {
-                    System.out.println("Error reading/writing file: " + e1.getMessage()); // Print message if we get an Input/Output exception with reading/writing the .txt file.
+                else
+                {
+                    guideText.setText("Password must be at least 6 characters long! Try again!"); // Set the guide label to inform user of password requirement.
                 }
             }
 
             else
             {
-                guideText.setText("Password must be at least 6 characters long! Try again!"); // Set the guide label to inform user of password requirement.
+                guideText.setText("Username must not be blank! Try again!"); // Set the guide label to inform user of username requirement.
             }
-
 		});
 
 		backButton.setOnAction(e -> { // If the "Back" button was pressed,
