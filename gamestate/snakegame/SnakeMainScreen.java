@@ -105,15 +105,13 @@ public class SnakeMainScreen {
                         "   • Eat the red food to grow longer\n" +
                         "   • Each food gives you 10 points\n\n" +
 
-                        "⚠️ AVOID:\n" +
+                        "⚠️ AVOID GAME OVER:\n" +
                         "   • Running into walls\n" +
                         "   • Running into yourself\n\n" +
 
                         "🏆 SCORING:\n" +
                         "   • Your score increases as you eat more food\n" +
-                        "   • Try to beat the top 5 high scores!\n\n" +
-
-                        "Game over when the snake crashes into a wall or itself.";
+                        "   • Try to beat the top 5 high scores!";
 
         Label instructionsLabel = new Label(instructions);
         instructionsLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 18));
