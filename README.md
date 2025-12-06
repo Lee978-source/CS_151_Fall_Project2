@@ -12,15 +12,20 @@ git clone https://github.com/Lee978-source/CS_151_Fall_Project2.git
 
 cd CS_151_Fall_Project2
 
-Compile the code from root of the repo:
+Compile all files of the repo:
 mkdir bin
+javac --module-path /path/to/javafx/lib --add-modules javafx.controls,javafx.fxml \
+      -d bin $(find gamestate -name "*.java")
 
 javac -d bin gamestate/GameManager.java
 
 Run the program:
-java -cp bin GameManager.Main
+java --module-path /path/to/javafx/lib --add-modules javafx.controls,javafx.fxml \
+     -cp bin gamestate.GameManager
 
-Follow the terminal prompts to create accounts, manage files, and edit files with PDF/document/slide/spreadsheet menu features to make changes to your file.
+
+Follow the JavaFX prompts to create or log into an account, then start playing BlackJack or Snake to compete for high scores.
+
 Ethan implemented the Food and GameManager classes and contributed to the Snake and SnakeGamePane classes
 
 Phuong implemented the SnakeMainScreen and BlackJackMainScreen classes and contributed to the Snake and SnakeGamePane classes
@@ -28,3 +33,5 @@ Phuong implemented the SnakeMainScreen and BlackJackMainScreen classes and contr
 Lordin contributed to the BlackJackGamePane, Card, Deck, GameState, and Hand classes
 
 Brian implemented the BlackJackEngine class and contributed to the BlackJackGamePane, Card, Deck, GameState, and Hand classes
+
+Link to Presentation Video: 
