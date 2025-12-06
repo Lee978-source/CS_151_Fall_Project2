@@ -130,6 +130,10 @@ public class BlackJackGamePane {
         mainBackButton.setOnAction(e -> {
             System.out.println("Back to Main Menu button clicked!");
             System.out.println("gameManager: " + this.gameManager);
+            int finalBalance = engine.getBalance(BlackJackEngine.player);
+            gameManager.upsertBlackjackScore(username, finalBalance); // save always
+            gameManager.loadHighScores();   // refresh
+            gameManager.setMainScreen();    // rebuild labels
             stopBlackjackMusic();
             System.out.println("mainScreen: " + this.gameManager.getMainScreen());
             this.primaryStage.setScene(this.gameManager.getMainScreen());

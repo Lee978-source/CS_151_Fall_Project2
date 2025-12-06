@@ -2,3 +2,4 @@
 username,BJ,1200
 
 Lloyd Garmadon123,SNAKE,340
+Lordin Yi,BJ,950

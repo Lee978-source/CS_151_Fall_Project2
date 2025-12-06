@@ -241,6 +241,39 @@ public class GameManager extends Application {
         }
     }
 
+    public void upsertBlackjackScore(String username, int score) {
+        loadHighScores(); // reload from file
+
+        String prefix = username + ",BJ,";
+        boolean updated = false;
+
+        for (int i = 0; i < allHighScores.size(); i++) {
+            String line = allHighScores.get(i);
+            if (line.startsWith(prefix)) {
+                // replace existing line for this user
+                allHighScores.set(i, prefix + score);
+                updated = true;
+                break;
+            }
+        }
+
+        // if no existing line for this user, append new one
+        if (!updated) {
+            allHighScores.add(prefix + score);
+        }
+
+        try {
+            Files.write(
+                    highScoresPath,
+                    allHighScores,
+                    StandardOpenOption.TRUNCATE_EXISTING
+            );
+        } catch (IOException e) {
+            System.out.println("Error saving high score: " + e.getMessage());
+        }
+    }
+
+
 
     /** Create and Set the "Intro" Screen: **/
     public void setIntroScreen() // Create Scene object for this "Intro" screen to be displayed.
