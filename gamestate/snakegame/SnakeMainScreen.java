@@ -127,7 +127,20 @@ public class SnakeMainScreen {
                 primaryStage.setScene(getMainMenuScene())
         );
 
-        root.getChildren().addAll(title, instructionsLabel, backButton);
+        Button mainMenuButton = new Button("MAIN MENU");
+        styleButton(mainMenuButton, "#f38fa9");
+        mainMenuButton.setOnAction(e -> {
+            if (this.snakeMenuMusic != null) // If the Snake Menu music is still playing, stop it upon returning to the program main menu.
+            {
+                this.snakeMenuMusic.stop();
+                this.isMenuMusicPlaying = false;
+            }
+
+            // Get the Main Menu screen from the Game Manager and set it as the current scene.
+            primaryStage.setScene(this.gameManager.getMainScreen());
+        });
+
+        root.getChildren().addAll(title, instructionsLabel, backButton, mainMenuButton);
         Scene instructionsScene = new Scene(root, 800, 600);
         primaryStage.setScene(instructionsScene);
     }
