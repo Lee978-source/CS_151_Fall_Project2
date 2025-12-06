@@ -1,8 +1,5 @@
 package gamestate.blackjack;
 
-// Keep the import for the user's existing GameManager, but won't use it for Blackjack persistence
-import gamestate.GameManager;
-
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
