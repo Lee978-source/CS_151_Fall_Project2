@@ -162,7 +162,7 @@ public class SnakeGamePane {
 
 
     public void startGameLoop() {
-        gameLoop = new AnimationTimer() {
+        this.gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 if (now - lastUpdate >= gameSpeed) {
@@ -221,7 +221,9 @@ public class SnakeGamePane {
     }
 
     private void showGameOver() {
-        gameLoop.stop();
+        this.gameLoop.stop(); // Stop the current gameLoop to avoid duplicate runs of it upon game restarts (otherwise we will get conflicting game states).
+        this.gameLoop = null; // Clear out the current gameLoop variable (we always want to use a brand new one in every run of the Snake game to prevent conflicts).
+
         VBox gameOverBox = new VBox(20);
         gameOverBox.setAlignment(Pos.CENTER);
         gameOverBox.setStyle("-fx-background-color: rgba(137,226,234,0.9);");
@@ -279,6 +281,13 @@ public class SnakeGamePane {
     }
 
     private void restart() {
+
+        if (this.gameLoop != null)
+        {
+            this.gameLoop.stop(); // Stop the current gameLoop to avoid duplicate runs of it upon game restarts (otherwise we will get conflicting game states).
+            this.gameLoop = null; // Clear out the current gameLoop variable (we always want to use a brand new one in every run of the Snake game to prevent conflicts).
+        }
+
         score = 0;
         gameOver =false;
         paused = false;
@@ -293,8 +302,10 @@ public class SnakeGamePane {
     }
 
     private void returnToSnakeMenu() {
-        if (gameLoop != null) {
-            gameLoop.stop();
+        if (this.gameLoop != null)
+        {
+            this.gameLoop.stop(); // Stop the current gameLoop to avoid duplicate runs of it upon game restarts (otherwise we will get conflicting game states).
+            this.gameLoop = null; // Clear out the current gameLoop variable (we always want to use a brand new one in every run of the Snake game to prevent conflicts).
         }
 
         if (this.snakeMusic != null) // If the Snake music is still playing, stop it upon returning to the Snake Game Menu.
@@ -308,8 +319,10 @@ public class SnakeGamePane {
     }
 
     private void returnToMainMenu() {
-        if (gameLoop != null) {
-            gameLoop.stop();
+        if (this.gameLoop != null)
+        {
+            this.gameLoop.stop(); // Stop the current gameLoop to avoid duplicate runs of it upon game restarts (otherwise we will get conflicting game states).
+            this.gameLoop = null; // Clear out the current gameLoop variable (we always want to use a brand new one in every run of the Snake game to prevent conflicts).
         }
 
         if (this.snakeMusic != null) // If the Snake music is still playing, stop it upon returning to the Main Menu of the program.
