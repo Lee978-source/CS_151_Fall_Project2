@@ -48,7 +48,7 @@ public class BlackJackMainScreen {
         Button newGameButton = new Button("Start New Game");
         newGameButton.setPrefWidth(200);
         newGameButton.setOnAction(e -> {
-            BlackJackGamePane gamePane = new BlackJackGamePane(primaryStage, username, this);
+            BlackJackGamePane gamePane = new BlackJackGamePane(primaryStage, username, this, this.gameManager);
             Scene gameScene = gamePane.createGameScene();
             primaryStage.setScene(gameScene);
         });

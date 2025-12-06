@@ -65,7 +65,7 @@ public class SnakeGamePane {
         canvas.setFocusTraversable(true);
         gc = canvas.getGraphicsContext2D();
 
-       VBox pauseMenu = createPauseMenu();
+        VBox pauseMenu = createPauseMenu();
         pauseMenu.setVisible(false);
 
         StackPane centerPane = new StackPane(canvas,pauseMenu);
@@ -177,7 +177,7 @@ public class SnakeGamePane {
                             showGameOver();
                             return;
                         }
-                       // game.update();
+                        // game.update();
                         render();
                     }
                     lastUpdate = now;
