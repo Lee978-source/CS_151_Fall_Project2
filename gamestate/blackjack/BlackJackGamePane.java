@@ -17,12 +17,21 @@ import javafx.scene.control.TextField;
 import javafx.geometry.Insets;
 import java.util.List;
 
+// for file I/O
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 public class BlackJackGamePane {
     private final Stage primaryStage;
     private final String username;
     private final BlackJackEngine engine;
     private final GameManager gameManager;
     private MediaPlayer blackjackMusic;
+
+    private static final String SAVE_FILE_NAME = "blackjack_save_state.json";
 
     private static final int CARD_WIDTH = 70;
     private static final int MIN_BET = 50; // min bet
@@ -41,9 +50,6 @@ public class BlackJackGamePane {
     private HBox ai1CardBox;
     private HBox ai2CardBox;
 
-    //main menu
-    private Button backButton;
-
     // betting interface
     private HBox bettingInputPanel;
     private TextField betAmountField;
@@ -54,6 +60,10 @@ public class BlackJackGamePane {
     private Button standButton;
     private Button nextRoundButton;
     private BlackJackMainScreen mainScreen;
+
+    // save/load buttons
+    private Button saveButton;
+    private Button loadButton;
 
     public BlackJackGamePane(Stage primaryStage, String username, BlackJackMainScreen mainScreen, GameManager gameManager) {
         this.primaryStage = primaryStage;
@@ -144,18 +154,25 @@ public class BlackJackGamePane {
         standButton = new Button("Stand");
         nextRoundButton = new Button("New Round");
 
+        // initialize button
+        saveButton = new Button("Save Game");
+        loadButton = new Button("Load Game");
+
+
         // white buttons style
         hitButton.setStyle(whiteButtonStyle);
         standButton.setStyle(whiteButtonStyle);
         nextRoundButton.setStyle(whiteButtonStyle);
 
+        saveButton.setStyle(whiteButtonStyle);
+        loadButton.setStyle(whiteButtonStyle);
         bettingInputPanel = createBettingInputPanel();
 
-        HBox buttonRow = new HBox(15, hitButton, standButton, nextRoundButton);
-        buttonRow.setAlignment(Pos.CENTER);
+        // Combined row for action and save/load buttons
+        HBox actionRow = new HBox(15, hitButton, standButton, nextRoundButton, saveButton, loadButton);
+        actionRow.setAlignment(Pos.CENTER);
 
-
-        VBox bottomBox = new VBox(15, balanceLabel, bettingInputPanel, buttonRow, backBtn, mainBackButton);
+        VBox bottomBox = new VBox(15, balanceLabel, bettingInputPanel, actionRow, backBtn, mainBackButton);
         bottomBox.setAlignment(Pos.CENTER);
         root.setBottom(bottomBox);
 
@@ -167,7 +184,7 @@ public class BlackJackGamePane {
             if (engine.isRoundOver()) {
                 setControls(false, false, true);
             } else if (!engine.getCurrentPlayer().equals(BlackJackEngine.player)) {
-                setControls(false, false, false);
+                setControls(false, false, true);
             }
         });
 
@@ -179,6 +196,9 @@ public class BlackJackGamePane {
 
         nextRoundButton.setOnAction(e -> startBettingPhase());
         placeBetButton.setOnAction(e -> handlePlaceBet());
+
+        saveButton.setOnAction(e -> handleSaveGame());
+        loadButton.setOnAction(e -> handleLoadGame());
 
         // initial game state
         startBettingPhase();
@@ -230,6 +250,73 @@ public class BlackJackGamePane {
         }
     }
 
+    // methods for GSON
+    // saves the game state JSON string
+    private static boolean saveGameToFile(String jsonState) {
+        try (FileWriter file = new FileWriter(SAVE_FILE_NAME)) {
+            file.write(jsonState);
+            file.flush();
+            return true;
+        } catch (IOException e) {
+            System.err.println("Error saving game state: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // loads the game state JSON string
+    private static String loadGameFromFile() {
+        try {
+            File file = new File(SAVE_FILE_NAME);
+            if (!file.exists()) {
+                System.out.println("No save file found.");
+                return null;
+            }
+            // reads the content from the file
+            return Files.readString(Paths.get(SAVE_FILE_NAME));
+        } catch (IOException e) {
+            System.err.println("Error loading game state: " + e.getMessage());
+            return null;
+        }
+    }
+
+    // handler for Save button
+    private void handleSaveGame() {
+        String savedJson = engine.saveState();
+
+        boolean success = saveGameToFile(savedJson);
+
+        if (success) {
+            statusLabel.setText("Game state saved successfully!");
+        } else {
+            statusLabel.setText("Error: Could not save game state.");
+        }
+    }
+
+    // handler for Load button
+    private void handleLoadGame() {
+        String loadedJson = loadGameFromFile();
+
+        if (loadedJson != null) {
+            engine.loadState(loadedJson);
+
+            refreshLabels();
+
+            if (engine.isRoundOver()) {
+                setControls(false, false, true);
+                statusLabel.setText("Game loaded! Round finished. Press 'New Round' to continue.");
+            } else if (engine.getCurrentPlayer().equals(BlackJackEngine.player)) {
+                setControls(true, false, false);
+                statusLabel.setText("Game loaded! It is your turn. Hit or Stand?");
+            } else {
+                setControls(false, false, true);
+                statusLabel.setText("Game loaded! Press 'New Round' to continue.");
+            }
+
+        } else {
+            statusLabel.setText("Error: Could not load save data.");
+        }
+    }
+
     // helper methods to set game state
     private void setControls(boolean hitStandEnabled, boolean bettingEnabled, boolean nextRoundEnabled) {
         hitButton.setDisable(!hitStandEnabled);
@@ -238,6 +325,9 @@ public class BlackJackGamePane {
 
         bettingInputPanel.setVisible(bettingEnabled);
         bettingInputPanel.setManaged(bettingEnabled);
+
+        saveButton.setDisable(false);
+        loadButton.setDisable(false);
     }
 
 
