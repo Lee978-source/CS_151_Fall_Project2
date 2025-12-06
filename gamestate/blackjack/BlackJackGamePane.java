@@ -470,7 +470,7 @@ public class BlackJackGamePane {
                 this.blackjackMusic.dispose();
             }
 
-            var url = getClass().getResource("/audio/blackjackMusic.mp3");
+            var url = getClass().getResource("/resources/audio/blackjackMusic.mp3");
             System.out.println("DEBUG: " + url);
 
             // If something is wrong, just skip music instead of crashing
@@ -479,7 +479,7 @@ public class BlackJackGamePane {
                 return;
             }
 
-            System.out.println("DEBUG: " + getClass().getResource("/audio/blackjackMusic.mp3"));
+            System.out.println("DEBUG: " + getClass().getResource("/resources/audio/blackjackMusic.mp3"));
             // Load and play the new music
             Media fileMusic = new Media(url.toString());
             this.blackjackMusic = new MediaPlayer(fileMusic);
@@ -487,7 +487,7 @@ public class BlackJackGamePane {
             this.blackjackMusic.play();
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Warning: Blackjack music file not found at /audio/blackjackMusic.mp3");
+            System.out.println("Warning: Blackjack music file not found at /resources/audio/blackjackMusic.mp3");
         }
     }
 
