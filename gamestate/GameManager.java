@@ -35,6 +35,8 @@ public class GameManager extends Application {
 	private Scene createAccScreen;
 	private Scene mainScreen;
 
+    private VBox bjScoresBox;
+
 	// Global Instance UI components to be used in "Log In" and "Create Account" screens (need separate UI components for each one because a node can have ONLY one parent):
 	//private Label loginMessageLabel = new Label(""); // Shows success/failure message ("Log In" screen).
 	private TextField loginUsernameField = new TextField(); // Create a text field to enter username ("Log In" screen).
@@ -213,6 +215,31 @@ public class GameManager extends Application {
         }
     }
 
+    // helper method to save high score
+    private void saveHighScoresToFile() {
+        try {
+            Files.write(
+                    highScoresPath,
+                    allHighScores,
+                    StandardOpenOption.CREATE, // Ensure file exists
+                    StandardOpenOption.TRUNCATE_EXISTING // Overwrite
+            );
+        } catch (IOException e) {
+            System.out.println("Error saving high score file: " + e.getMessage());
+        }
+    }
+
+    public void refreshMainScreenUI() {
+        loadHighScores();
+
+        if (bjScoresBox != null) {
+            bjScoresBox.getChildren().remove(1, bjScoresBox.getChildren().size());
+            for (String line : getTopScoresForGame("BJ", 5)) {
+                bjScoresBox.getChildren().add(new Label(line));
+            }
+        }
+    }
+
     private List<String> getTopScoresForGame(String gameCode, int limit) {
         List<String> scoresForGame = new ArrayList<>();
 
@@ -242,35 +269,46 @@ public class GameManager extends Application {
     }
 
     public void upsertBlackjackScore(String username, int score) {
-        loadHighScores(); // reload from file
+        loadHighScores();
 
         String prefix = username + ",BJ,";
-        boolean updated = false;
+        int existingIndex = -1;
+        int currentHighScore = -1; // -1 means no score found yet
 
         for (int i = 0; i < allHighScores.size(); i++) {
             String line = allHighScores.get(i);
             if (line.startsWith(prefix)) {
-                // replace existing line for this user
-                allHighScores.set(i, prefix + score);
-                updated = true;
-                break;
+                try {
+                    String scorePart = line.substring(prefix.length()).trim();
+                    int scoreValue = Integer.parseInt(scorePart);
+
+                    // found the record for the user
+                    existingIndex = i;
+                    currentHighScore = scoreValue;
+                    break;
+                } catch (NumberFormatException e) {
+                }
             }
         }
 
-        // if no existing line for this user, append new one
-        if (!updated) {
+        boolean scoreWasSaved = false;
+
+        if (existingIndex != -1) {
+            if (score > currentHighScore) {
+                allHighScores.set(existingIndex, prefix + score);
+                scoreWasSaved = true;
+            }
+        }
+        else {
             allHighScores.add(prefix + score);
+            scoreWasSaved = true;
         }
 
-        try {
-            Files.write(
-                    highScoresPath,
-                    allHighScores,
-                    StandardOpenOption.TRUNCATE_EXISTING
-            );
-        } catch (IOException e) {
-            System.out.println("Error saving high score: " + e.getMessage());
+        if (scoreWasSaved) {
+            saveHighScoresToFile();
         }
+
+        refreshMainScreenUI();
     }
 
 

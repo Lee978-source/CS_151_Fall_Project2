@@ -303,6 +303,29 @@ public class BlackJackEngine {
         return results;
     }
 
+    public void resetGame(int startingBalance) {
+        this.deck.initializeDeck();
+        this.deck.shuffle();
+
+        this.dealerHand.clear();
+
+        for (Player p : players.values()) {
+            p.balance = startingBalance;
+            p.hand.clear();
+            p.hasStood = false;
+            p.bet = 0; // reset bet for the new game
+        }
+
+        this.betAmount = 0;
+        this.playerIndex = 0;
+        this.roundOver = false;
+        this.lastUserDelta = 0;
+
+        this.activePlayers.clear();
+        this.activePlayers.addAll(this.players.keySet());
+    }
+
+
     // ---------- getters for UI/debug ----------
 
     public Hand getHand(String playerName) {

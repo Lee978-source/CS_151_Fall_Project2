@@ -65,6 +65,8 @@ public class BlackJackGamePane {
     private Button saveButton;
     private Button loadButton;
 
+    private Button restartButton;
+
     public BlackJackGamePane(Stage primaryStage, String username, BlackJackMainScreen mainScreen, GameManager gameManager) {
         this.primaryStage = primaryStage;
         this.username = username;
@@ -154,6 +156,8 @@ public class BlackJackGamePane {
         standButton = new Button("Stand");
         nextRoundButton = new Button("New Round");
 
+        restartButton = new Button("Restart Game");
+
         // initialize button
         saveButton = new Button("Save Game");
         loadButton = new Button("Load Game");
@@ -163,13 +167,13 @@ public class BlackJackGamePane {
         hitButton.setStyle(whiteButtonStyle);
         standButton.setStyle(whiteButtonStyle);
         nextRoundButton.setStyle(whiteButtonStyle);
-
+        restartButton.setStyle(whiteButtonStyle);
         saveButton.setStyle(whiteButtonStyle);
         loadButton.setStyle(whiteButtonStyle);
         bettingInputPanel = createBettingInputPanel();
 
         // Combined row for action and save/load buttons
-        HBox actionRow = new HBox(15, hitButton, standButton, nextRoundButton, saveButton, loadButton);
+        HBox actionRow = new HBox(15, hitButton, standButton, nextRoundButton, saveButton, loadButton, restartButton);
         actionRow.setAlignment(Pos.CENTER);
 
         VBox bottomBox = new VBox(15, balanceLabel, bettingInputPanel, actionRow, backBtn, mainBackButton);
@@ -196,7 +200,7 @@ public class BlackJackGamePane {
 
         nextRoundButton.setOnAction(e -> startBettingPhase());
         placeBetButton.setOnAction(e -> handlePlaceBet());
-
+        restartButton.setOnAction(e -> handleRestartGame());
         saveButton.setOnAction(e -> handleSaveGame());
         loadButton.setOnAction(e -> handleLoadGame());
 
@@ -248,6 +252,14 @@ public class BlackJackGamePane {
         } catch (IllegalStateException e) {
             statusLabel.setText("Cannot start round. " + e.getMessage());
         }
+    }
+
+    private void handleRestartGame() {
+        int finalBalance = engine.getBalance(BlackJackEngine.player);
+        gameManager.upsertBlackjackScore(username, finalBalance);
+        engine.resetGame(1000);
+        startBettingPhase();
+        statusLabel.setText("Game restarted! Place your bet.");
     }
 
     // methods for GSON
