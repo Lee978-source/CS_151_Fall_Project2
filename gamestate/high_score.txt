@@ -15,3 +15,4 @@ Lordin Yi,SNAKE,0
 Lordin Yi,SNAKE,10
 Lordin Yi,SNAKE,0
 Lordin Yi,SNAKE,0
+Lloyd Garmadon123,SNAKE,0
