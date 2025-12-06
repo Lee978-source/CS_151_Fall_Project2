@@ -12,15 +12,22 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
 
 public class SnakeMainScreen {
     private Stage primaryStage;
     private String username;
     private GameManager gameManager;
     private Scene mainMenuScene;
+    private MediaPlayer snakeMenuMusic;
+    private boolean isMenuMusicPlaying;
 
     public SnakeMainScreen(Stage primaryStage, String username, GameManager gameManager) {
         this.primaryStage = primaryStage;
@@ -51,14 +58,28 @@ public class SnakeMainScreen {
         backButton.setOnAction(e -> backToMainMenu());
 
         root.getChildren().addAll(title, startButton, instructionsButton, backButton);
+
         this.mainMenuScene = new Scene(root, 800, 600);
     }
 
     public Scene getMainMenuScene() {
+
+        if (!this.isMenuMusicPlaying)
+        {
+            this.cueSnakeMenuMusic(); // Play the Snake Menu music when entering the Snake Main Menu.
+        }
+
         return this.mainMenuScene;
     }
 
     private void startGame() {
+
+        if (this.snakeMenuMusic != null) // If the Snake Menu music is still playing, stop it upon restarting so that the music can restart when reloading the game again.
+        {
+            this.snakeMenuMusic.stop();
+            this.isMenuMusicPlaying = false;
+        }
+
         SnakeGamePane snakeGamePane = new SnakeGamePane(this.primaryStage, this.username, this.gameManager);
         this.primaryStage.setScene(snakeGamePane.createGameScene()); // Create the Scene object of the Snake Game Pane and set it as the current Scene.
         this.primaryStage.show();
@@ -130,8 +151,34 @@ public class SnakeMainScreen {
     }
 
     private void backToMainMenu() {
+
+        if (this.snakeMenuMusic != null) // If the Snake Menu music is still playing, stop it upon returning to the program main menu.
+        {
+            this.snakeMenuMusic.stop();
+            this.isMenuMusicPlaying = false;
+        }
+
         // Get the Main Menu screen from the Game Manager and set it as the current scene.
         primaryStage.setScene(this.gameManager.getMainScreen());
+    }
+
+    private void cueSnakeMenuMusic()
+    {
+        // Always get rid of any existing MediaPlayers first to avoid duplicates:
+        if (this.snakeMenuMusic != null) // If the Snake Menu music is currently playing, stop it (so we do not accidentally have multiple copies playing when calling this method again in future runs).
+        {
+            this.snakeMenuMusic.stop();
+            this.isMenuMusicPlaying = false;
+            this.snakeMenuMusic.dispose(); // Get rid of the MediaPlayer in the case we need to reset.
+        }
+
+        // Always create a new MediaPlayer to play the soundtrack:
+        Media fileMusic = new Media(getClass().getResource("/audio/snakeMenuMusic.mp3").toString()); // Get the Snake Menu music file as a String.
+        this.snakeMenuMusic = new MediaPlayer(fileMusic); // Turn the string of the data of the Snake Menu music file into playable media.
+
+        this.snakeMenuMusic.setCycleCount(MediaPlayer.INDEFINITE); // Keep playing the music for as long until we call stop().
+        this.isMenuMusicPlaying = true;
+        this.snakeMenuMusic.play(); // Play the Snake music now.
     }
 
 }
