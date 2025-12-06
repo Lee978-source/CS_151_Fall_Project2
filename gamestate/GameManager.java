@@ -35,10 +35,6 @@ public class GameManager extends Application {
 	private Scene createAccScreen;
 	private Scene mainScreen;
 
-    //Global instance variable to access the main screen from BJ
-    private BlackJackMainScreen BJMainSc;
-    private SnakeMainScreen snakeMainSc;
-
 	// Global Instance UI components to be used in "Log In" and "Create Account" screens (need separate UI components for each one because a node can have ONLY one parent):
 	//private Label loginMessageLabel = new Label(""); // Shows success/failure message ("Log In" screen).
 	private TextField loginUsernameField = new TextField(); // Create a text field to enter username ("Log In" screen).
@@ -425,25 +421,19 @@ public class GameManager extends Application {
     	Button logout = new Button("Logout"); // Button to log out and go back to "Intro" screen.
 
         // Create Main Screen scene for Snake game
-        if (snakeMainSc == null) {  // Only create once
-            snakeMainSc = new SnakeMainScreen(this.getPrimaryStage(), this.getUsername(), this);
-            snakeMainSc.createMainMenuScene();
-        }
+        SnakeMainScreen snakeMainSc = new SnakeMainScreen(this.getPrimaryStage(), this.getUsername(), this); // Create an instance of the SnakeMainScreen class first.
+        snakeMainSc.createMainMenuScene(); // Second, create Main Menu Scene object from the SnakeMainScreen class.
 
-        launchSnake.setOnAction(e -> {
-            this.getPrimaryStage().setScene(snakeMainSc.getMainMenuScene());
+        launchSnake.setOnAction(e -> { // If the user has selected "Play Snake Game" button,
+            this.getPrimaryStage().setScene(snakeMainSc.getMainMenuScene()); // Set the scene to the Main Menu of the Snake game.
         });
 
         // Create Main Screen scene for Blackjack game
-        if (BJMainSc == null) {  // Only create once
-            BJMainSc = new BlackJackMainScreen(this.getPrimaryStage(), this.getUsername(), this);
-            BJMainSc.createMainMenuScene();
-        }
+        BlackJackMainScreen BJMainSc = new BlackJackMainScreen(this.getPrimaryStage(), this.getUsername(), this); // Create an instance of the BlackJackMainScreen class first.
+        BJMainSc.createMainMenuScene(); // Second, create Main Menu Scene object from the BlackJackMainScreen class.
 
-        launchBlackJack.setOnAction(e -> {
-            BJMainSc = new BlackJackMainScreen(this.getPrimaryStage(), this.getUsername(), this);
-            BJMainSc.createMainMenuScene();
-            this.getPrimaryStage().setScene(BJMainSc.getMainMenuScene());
+        launchBlackJack.setOnAction(e -> { // If the user has selected "Play Blackjack" button,
+            this.getPrimaryStage().setScene(BJMainSc.getMainMenuScene()); // Set the scene to the Main Menu of the Blackjack game.
         });
 
     	logout.setOnAction(e -> { // If the user has selected "Logout" button,

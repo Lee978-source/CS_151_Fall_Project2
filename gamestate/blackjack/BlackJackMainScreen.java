@@ -22,7 +22,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-public class BlackJackMainScreen extends GameManager {
+public class BlackJackMainScreen {
 
 
     private Stage primaryStage;
@@ -48,7 +48,7 @@ public class BlackJackMainScreen extends GameManager {
         Button newGameButton = new Button("Start New Game");
         newGameButton.setPrefWidth(200);
         newGameButton.setOnAction(e -> {
-            BlackJackGamePane gamePane = new BlackJackGamePane(primaryStage, username, this, this.gameManager);
+            BlackJackGamePane gamePane = new BlackJackGamePane(primaryStage, username, this);
             Scene gameScene = gamePane.createGameScene();
             primaryStage.setScene(gameScene);
         });
