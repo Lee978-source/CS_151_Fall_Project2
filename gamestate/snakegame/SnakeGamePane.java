@@ -348,7 +348,7 @@ public class SnakeGamePane {
         }
 
         // Always create a new MediaPlayer to play the soundtrack:
-        Media fileMusic = new Media(getClass().getResource("/audio/snakeMusic.mp3").toString()); // Get the Snake music file as a String.
+        Media fileMusic = new Media(getClass().getResource("/resources/audio/snakeMusic.mp3").toString()); // Get the Snake music file as a String.
         this.snakeMusic = new MediaPlayer(fileMusic); // Turn the string of the data of the Snake music file into playable media.
 
         this.snakeMusic.setCycleCount(MediaPlayer.INDEFINITE); // Keep playing the music for as long until we call stop().
